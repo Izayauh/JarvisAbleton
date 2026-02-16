@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "description": "VST Discovery Service Configuration",
+  "osc": {
+    "host": "127.0.0.1",
+    "send_port": 11002,
+    "recv_port": 11003,
+    "timeout": 10.0
+  },
+  "cache": {
+    "file": "config/vst_cache.json",
+    "ttl_seconds": 3600
+  },
+  "plugin_categories": {
+    "eq": {
+      "keywords": ["eq", "equalizer", "filter", "pro-q", "proq", "parametric"],
+      "native_fallback": "EQ Eight"
+    },
+    "compressor": {
+      "keywords": ["compress", "comp", "dynamics", "pro-c", "proc"],
+      "native_fallback": "Compressor"
+    },
+    "limiter": {
+      "keywords": ["limiter", "limit", "pro-l", "ceiling"],
+      "native_fallback": "Limiter"
+    },
+    "reverb": {
+      "keywords": ["reverb", "verb", "room", "hall", "plate", "space"],
+      "native_fallback": "Reverb"
+    },
+    "delay": {
+      "keywords": ["delay", "echo", "tape"],
+      "native_fallback": "Delay"
+    },
+    "distortion": {
+      "keywords": ["distort", "saturat", "overdrive", "fuzz", "amp", "drive", "warm"],
+      "native_fallback": "Saturator"
+    },
+    "modulation": {
+      "keywords": ["chorus", "flanger", "phaser", "modula", "tremolo"],
+      "native_fallback": "Chorus-Ensemble"
+    },
+    "dynamics": {
+      "keywords": ["gate", "expander", "de-ess", "deess", "transient", "multiband"],
+      "native_fallback": "Multiband Dynamics"
+    },
+    "utility": {
+      "keywords": ["utility", "gain", "trim", "mono", "stereo", "width", "phase"],
+      "native_fallback": "Utility"
+    }
+  },
+  "chain_templates": {
+    "vocal_basic": ["eq", "compressor", "de-esser", "reverb"],
+    "vocal_full": ["eq", "compressor", "de-esser", "saturation", "eq", "reverb", "delay"],
+    "drum_bus": ["eq", "compressor", "saturation", "limiter"],
+    "bass": ["eq", "compressor", "saturation"],
+    "master": ["eq", "compressor", "limiter"]
+  }
+}
+

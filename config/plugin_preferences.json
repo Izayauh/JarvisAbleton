@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "description": "Plugin filtering and preferences for Jarvis Ableton",
+
+  "blacklist": {
+    "description": "Plugins to never load (unlicensed, problematic, etc.)",
+    "plugins": [
+      "iZotope Nectar",
+      "iZotope Nectar 3",
+      "iZotope Nectar 4",
+      "iZotope Ozone",
+      "iZotope Ozone 9",
+      "iZotope Ozone 10",
+      "iZotope Ozone 11",
+      "iZotope VocalSynth",
+      "iZotope VocalSynth 2",
+      "iZotope Neoverb",
+      "iZotope Trash",
+      "iZotope RX",
+      "iZotope Neutron",
+      "iZotope Insight",
+      "iZotope Tonal Balance",
+      "Waves",
+      "FabFilter Pro-Q",
+      "FabFilter Pro-C",
+      "FabFilter Pro-L",
+      "FabFilter Pro-MB",
+      "FabFilter Saturn",
+      "Soundtoys",
+      "Universal Audio"
+    ],
+    "patterns": [
+      "iZotope *",
+      "Waves *",
+      "FabFilter *",
+      "Soundtoys *",
+      "UAD *"
+    ]
+  },
+
+  "whitelist": {
+    "description": "Plugins explicitly allowed (overrides blacklist)",
+    "plugins": []
+  },
+
+  "prefer_native": {
+    "description": "When true, prefer Ableton native devices over third-party",
+    "enabled": true
+  },
+
+  "fallback_mappings": {
+    "description": "When a blacklisted plugin is requested, use these native alternatives",
+    "mappings": {
+      "iZotope Nectar": ["EQ Eight", "Compressor", "Reverb"],
+      "iZotope Ozone": ["EQ Eight", "Glue Compressor", "Limiter"],
+      "iZotope Neutron": ["EQ Eight", "Compressor", "Multiband Dynamics"],
+      "FabFilter Pro-Q": ["EQ Eight"],
+      "FabFilter Pro-C": ["Compressor", "Glue Compressor"],
+      "FabFilter Pro-L": ["Limiter"],
+      "FabFilter Pro-MB": ["Multiband Dynamics"],
+      "Waves C6": ["Multiband Dynamics"],
+      "Waves H-Delay": ["Simple Delay", "Ping Pong Delay"],
+      "Waves Renaissance": ["Compressor", "EQ Eight"],
+      "Soundtoys Decapitator": ["Saturator"],
+      "Soundtoys EchoBoy": ["Simple Delay", "Echo"],
+      "UAD 1176": ["Compressor"]
+    }
+  },
+
+  "warn_on_unavailable": {
+    "description": "Warn user when a suggested plugin is unavailable",
+    "enabled": true
+  },
+
+  "user_notes": {
+    "description": "Add notes about your plugin situation here",
+    "notes": "Edit this file to add/remove plugins from the blacklist based on your licenses."
+  }
+}

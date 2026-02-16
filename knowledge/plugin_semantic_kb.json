@@ -1,0 +1,1980 @@
+{
+  "version": "1.0",
+  "description": "Semantic knowledge base for Ableton Live audio effects - vocal processing focus",
+  "last_updated": "2024-12-27",
+  "plugins": {
+    "EQ Eight": {
+      "description": "8-band parametric EQ with flexible filter types. Primary tool for frequency sculpting and tonal shaping.",
+      "category": "eq",
+      "typical_use_cases": ["frequency_shaping", "cut_mud", "add_presence", "add_air", "high_pass", "notch_resonances"],
+      "signal_flow_position": ["first", "pre_compression", "post_compression", "last"],
+      "parameters": {
+        "1 Filter On A": {
+          "description": "Enable/disable band 1",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["enable", "band_1"]
+        },
+        "1 Filter Type A": {
+          "description": "Filter type for band 1 (0=LP48, 1=LP24, 2=LP12, 3=Notch, 4=HP12, 5=HP24, 6=HP48, 7=Bell, 8=LowShelf, 9=HighShelf)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 9.0,
+          "default": 4.0,
+          "choices": {
+            "0": "Low Pass 48dB",
+            "1": "Low Pass 24dB", 
+            "2": "Low Pass 12dB",
+            "3": "Notch",
+            "4": "High Pass 12dB",
+            "5": "High Pass 24dB",
+            "6": "High Pass 48dB",
+            "7": "Bell",
+            "8": "Low Shelf",
+            "9": "High Shelf"
+          },
+          "semantic_tags": ["filter_type", "band_1", "high_pass", "low_pass", "notch", "shelf"]
+        },
+        "1 Frequency A": {
+          "description": "Center frequency for band 1",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 10.0,
+          "max": 22000.0,
+          "default": 40.0,
+          "typical_ranges": {
+            "vocal_high_pass": {"min": 80, "max": 120, "description": "Cut rumble below vocal range"},
+            "vocal_mud_cut": {"min": 200, "max": 400, "description": "Cut muddy frequencies"},
+            "vocal_presence": {"min": 2000, "max": 5000, "description": "Boost presence/clarity"},
+            "vocal_air": {"min": 8000, "max": 12000, "description": "Add air and sparkle"}
+          },
+          "semantic_tags": ["frequency", "band_1", "hz"]
+        },
+        "1 Gain A": {
+          "description": "Gain adjustment for band 1",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "vocal_cut_mud": {"min": -6.0, "max": -2.0, "description": "Subtle mud reduction"},
+            "vocal_cut_harsh": {"min": -4.0, "max": -1.0, "description": "Reduce harshness"},
+            "vocal_presence_boost": {"min": 1.0, "max": 4.0, "description": "Add presence"},
+            "vocal_air_boost": {"min": 2.0, "max": 6.0, "description": "Add air/brightness"}
+          },
+          "semantic_tags": ["gain", "band_1", "db", "boost", "cut"]
+        },
+        "1 Resonance A": {
+          "description": "Q/bandwidth for band 1 (higher = narrower)",
+          "type": "q",
+          "min": 0.1,
+          "max": 12.0,
+          "default": 0.71,
+          "typical_ranges": {
+            "broad_shelf": {"min": 0.3, "max": 0.7, "description": "Wide, gentle shaping"},
+            "moderate_bell": {"min": 0.7, "max": 2.0, "description": "Standard EQ move"},
+            "surgical_cut": {"min": 4.0, "max": 12.0, "description": "Narrow notch for problem frequencies"}
+          },
+          "semantic_tags": ["q", "bandwidth", "resonance", "band_1"]
+        },
+        "2 Filter On A": {
+          "description": "Enable/disable band 2",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["enable", "band_2"]
+        },
+        "2 Filter Type A": {
+          "description": "Filter type for band 2",
+          "type": "choice",
+          "min": 0.0,
+          "max": 9.0,
+          "default": 7.0,
+          "semantic_tags": ["filter_type", "band_2"]
+        },
+        "2 Frequency A": {
+          "description": "Center frequency for band 2",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 10.0,
+          "max": 22000.0,
+          "default": 200.0,
+          "semantic_tags": ["frequency", "band_2", "hz"]
+        },
+        "2 Gain A": {
+          "description": "Gain adjustment for band 2",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "semantic_tags": ["gain", "band_2", "db"]
+        },
+        "2 Resonance A": {
+          "description": "Q/bandwidth for band 2",
+          "type": "q",
+          "min": 0.1,
+          "max": 12.0,
+          "default": 0.71,
+          "semantic_tags": ["q", "bandwidth", "band_2"]
+        },
+        "3 Filter On A": {
+          "description": "Enable/disable band 3",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["enable", "band_3"]
+        },
+        "3 Filter Type A": {
+          "description": "Filter type for band 3",
+          "type": "choice",
+          "min": 0.0,
+          "max": 9.0,
+          "default": 7.0,
+          "semantic_tags": ["filter_type", "band_3"]
+        },
+        "3 Frequency A": {
+          "description": "Center frequency for band 3",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 10.0,
+          "max": 22000.0,
+          "default": 1000.0,
+          "semantic_tags": ["frequency", "band_3", "hz"]
+        },
+        "3 Gain A": {
+          "description": "Gain adjustment for band 3",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "semantic_tags": ["gain", "band_3", "db"]
+        },
+        "3 Resonance A": {
+          "description": "Q/bandwidth for band 3",
+          "type": "q",
+          "min": 0.1,
+          "max": 12.0,
+          "default": 0.71,
+          "semantic_tags": ["q", "bandwidth", "band_3"]
+        },
+        "4 Filter On A": {
+          "description": "Enable/disable band 4",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["enable", "band_4"]
+        },
+        "4 Filter Type A": {
+          "description": "Filter type for band 4",
+          "type": "choice",
+          "min": 0.0,
+          "max": 9.0,
+          "default": 7.0,
+          "semantic_tags": ["filter_type", "band_4"]
+        },
+        "4 Frequency A": {
+          "description": "Center frequency for band 4",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 10.0,
+          "max": 22000.0,
+          "default": 3500.0,
+          "semantic_tags": ["frequency", "band_4", "hz"]
+        },
+        "4 Gain A": {
+          "description": "Gain adjustment for band 4",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "semantic_tags": ["gain", "band_4", "db"]
+        },
+        "4 Resonance A": {
+          "description": "Q/bandwidth for band 4",
+          "type": "q",
+          "min": 0.1,
+          "max": 12.0,
+          "default": 0.71,
+          "semantic_tags": ["q", "bandwidth", "band_4"]
+        },
+        "Scale": {
+          "description": "Scales all band gains",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 200.0,
+          "default": 100.0,
+          "semantic_tags": ["scale", "global", "gain"]
+        },
+        "Output Gain": {
+          "description": "Output level adjustment",
+          "type": "gain",
+          "unit": "dB",
+          "min": -12.0,
+          "max": 12.0,
+          "default": 0.0,
+          "semantic_tags": ["output", "gain", "level"]
+        }
+      },
+      "production_notes": "For vocals: Start with high-pass around 80-100Hz to remove rumble. Cut mud around 200-400Hz with narrow Q. Boost presence at 2-5kHz for clarity. Add air at 10-12kHz with a shelf. Use subtractive EQ before additive.",
+      "common_vocal_moves": {
+        "high_pass": {
+          "band": 1,
+          "filter_type": 5,
+          "frequency": 100,
+          "description": "Remove low-end rumble"
+        },
+        "cut_mud": {
+          "band": 2,
+          "filter_type": 7,
+          "frequency": 300,
+          "gain": -3,
+          "q": 1.5,
+          "description": "Reduce muddy buildup"
+        },
+        "add_presence": {
+          "band": 3,
+          "filter_type": 7,
+          "frequency": 3500,
+          "gain": 2.5,
+          "q": 1.0,
+          "description": "Add clarity and presence"
+        },
+        "add_air": {
+          "band": 4,
+          "filter_type": 9,
+          "frequency": 10000,
+          "gain": 3,
+          "description": "Add brightness and air"
+        }
+      }
+    },
+    "Compressor": {
+      "description": "Versatile dynamics processor with multiple modes. Controls dynamic range and adds punch/sustain.",
+      "category": "compressor",
+      "typical_use_cases": ["dynamics_control", "add_punch", "add_sustain", "level_consistency", "parallel_compression"],
+      "signal_flow_position": ["after_eq", "before_saturation", "parallel"],
+      "parameters": {
+        "Threshold": {
+          "description": "Level above which compression begins",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -40.0,
+          "max": 0.0,
+          "default": -20.0,
+          "typical_ranges": {
+            "gentle_vocal": {"min": -20, "max": -12, "description": "Light leveling, natural sound"},
+            "moderate_vocal": {"min": -24, "max": -18, "description": "Standard vocal compression"},
+            "aggressive_vocal": {"min": -30, "max": -24, "description": "Heavy compression, upfront sound"},
+            "parallel_crush": {"min": -40, "max": -30, "description": "Extreme compression for parallel blend"}
+          },
+          "semantic_tags": ["threshold", "level", "dynamics"]
+        },
+        "Ratio": {
+          "description": "Amount of compression applied (input:output ratio)",
+          "type": "ratio",
+          "min": 1.0,
+          "max": 20.0,
+          "default": 4.0,
+          "typical_ranges": {
+            "gentle": {"min": 1.5, "max": 2.5, "description": "Subtle, transparent compression"},
+            "moderate": {"min": 3, "max": 5, "description": "Standard vocal compression"},
+            "aggressive": {"min": 6, "max": 10, "description": "Heavy compression, obvious effect"},
+            "limiting": {"min": 10, "max": 20, "description": "Near-brick wall limiting"}
+          },
+          "semantic_tags": ["ratio", "amount", "intensity"]
+        },
+        "Attack": {
+          "description": "Time for compression to engage after threshold is crossed",
+          "type": "time",
+          "unit": "ms",
+          "min": 0.01,
+          "max": 1000.0,
+          "default": 10.0,
+          "typical_ranges": {
+            "fast_punch": {"min": 0.1, "max": 5, "description": "Quick attack, controls transients"},
+            "medium": {"min": 10, "max": 30, "description": "Balanced, allows some transient through"},
+            "slow_sustain": {"min": 30, "max": 100, "description": "Slow attack, emphasizes transients"}
+          },
+          "semantic_tags": ["attack", "time", "transient"]
+        },
+        "Release": {
+          "description": "Time for compression to disengage after signal drops below threshold",
+          "type": "time",
+          "unit": "ms",
+          "min": 1.0,
+          "max": 3000.0,
+          "default": 100.0,
+          "typical_ranges": {
+            "fast": {"min": 20, "max": 60, "description": "Quick recovery, can sound pumpy"},
+            "medium": {"min": 80, "max": 200, "description": "Natural recovery"},
+            "slow": {"min": 250, "max": 500, "description": "Smooth, sustained sound"},
+            "auto": {"min": -1, "max": -1, "description": "Program-dependent release"}
+          },
+          "semantic_tags": ["release", "time", "recovery"]
+        },
+        "Output Gain": {
+          "description": "Makeup gain to compensate for compression",
+          "type": "gain",
+          "unit": "dB",
+          "min": 0.0,
+          "max": 24.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "match_input": {"min": 2, "max": 6, "description": "Compensate for typical compression"},
+            "aggressive_makeup": {"min": 8, "max": 15, "description": "Heavy makeup for crushed signals"}
+          },
+          "semantic_tags": ["output", "gain", "makeup", "level"]
+        },
+        "Dry/Wet": {
+          "description": "Mix between dry and compressed signal (parallel compression)",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 100.0,
+          "typical_ranges": {
+            "full_compression": {"value": 100, "description": "All compressed signal"},
+            "parallel_blend": {"min": 30, "max": 70, "description": "Blend for parallel compression"},
+            "subtle_glue": {"min": 70, "max": 90, "description": "Subtle parallel effect"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "parallel", "blend"]
+        },
+        "Knee": {
+          "description": "Softness of compression onset",
+          "type": "db",
+          "unit": "dB",
+          "min": 0.0,
+          "max": 12.0,
+          "default": 6.0,
+          "typical_ranges": {
+            "hard": {"value": 0, "description": "Abrupt compression onset"},
+            "soft": {"min": 6, "max": 12, "description": "Gradual, transparent compression"}
+          },
+          "semantic_tags": ["knee", "soft", "hard", "character"]
+        },
+        "Model": {
+          "description": "Compression model/character (0=FF1, 1=FF2, 2=FB, 3=Clean)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 3.0,
+          "default": 0.0,
+          "choices": {
+            "0": "FF1 (Feed-forward 1 - punchy)",
+            "1": "FF2 (Feed-forward 2 - smooth)",
+            "2": "FB (Feedback - vintage)",
+            "3": "Clean (transparent)"
+          },
+          "semantic_tags": ["model", "character", "type", "mode"]
+        },
+        "Lookahead": {
+          "description": "Look ahead time for attack",
+          "type": "time",
+          "unit": "ms",
+          "min": 0.0,
+          "max": 10.0,
+          "default": 0.0,
+          "semantic_tags": ["lookahead", "time"]
+        }
+      },
+      "production_notes": "For vocals: Start with 4:1 ratio, threshold catching peaks by 3-6dB. Medium attack (10-30ms) to preserve articulation. Medium release (100-200ms) for natural sound. Use makeup gain to match input level. Consider parallel compression at 50% wet for density without losing dynamics.",
+      "common_vocal_settings": {
+        "gentle_leveling": {
+          "threshold": -18,
+          "ratio": 2.5,
+          "attack": 20,
+          "release": 150,
+          "knee": 6,
+          "description": "Subtle, transparent control"
+        },
+        "standard_vocal": {
+          "threshold": -22,
+          "ratio": 4,
+          "attack": 15,
+          "release": 120,
+          "knee": 3,
+          "description": "Typical vocal compression"
+        },
+        "aggressive_upfront": {
+          "threshold": -28,
+          "ratio": 6,
+          "attack": 5,
+          "release": 80,
+          "knee": 0,
+          "description": "In-your-face vocal sound"
+        },
+        "parallel_crush": {
+          "threshold": -35,
+          "ratio": 10,
+          "attack": 0.5,
+          "release": 50,
+          "wet": 40,
+          "description": "Heavy parallel compression"
+        }
+      }
+    },
+    "Glue Compressor": {
+      "description": "SSL-style bus compressor. Adds glue and cohesion to grouped signals. Great for vocal buses.",
+      "category": "compressor",
+      "typical_use_cases": ["bus_glue", "group_cohesion", "master_compression", "vocal_bus"],
+      "signal_flow_position": ["bus", "group", "master"],
+      "parameters": {
+        "Threshold": {
+          "description": "Compression threshold",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -40.0,
+          "max": 0.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "light_glue": {"min": -6, "max": -2, "description": "1-3dB reduction for subtle glue"},
+            "moderate_glue": {"min": -12, "max": -6, "description": "3-6dB reduction for cohesion"},
+            "heavy_glue": {"min": -20, "max": -12, "description": "Strong compression for aggressive sound"}
+          },
+          "semantic_tags": ["threshold", "level"]
+        },
+        "Ratio": {
+          "description": "Compression ratio (2, 4, or 10)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 1.0,
+          "choices": {
+            "0": "2:1 (gentle)",
+            "1": "4:1 (moderate)",
+            "2": "10:1 (aggressive)"
+          },
+          "semantic_tags": ["ratio", "amount"]
+        },
+        "Attack": {
+          "description": "Attack time (0.01, 0.1, 0.3, 1, 3, 10, 30ms)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 6.0,
+          "default": 3.0,
+          "choices": {
+            "0": "0.01ms",
+            "1": "0.1ms",
+            "2": "0.3ms",
+            "3": "1ms",
+            "4": "3ms",
+            "5": "10ms",
+            "6": "30ms"
+          },
+          "semantic_tags": ["attack", "time"]
+        },
+        "Release": {
+          "description": "Release time (0.1, 0.2, 0.4, 0.6, 0.8, 1.2s, Auto)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 6.0,
+          "default": 3.0,
+          "choices": {
+            "0": "0.1s",
+            "1": "0.2s",
+            "2": "0.4s",
+            "3": "0.6s",
+            "4": "0.8s",
+            "5": "1.2s",
+            "6": "Auto"
+          },
+          "semantic_tags": ["release", "time"]
+        },
+        "Makeup": {
+          "description": "Makeup gain",
+          "type": "gain",
+          "unit": "dB",
+          "min": 0.0,
+          "max": 24.0,
+          "default": 0.0,
+          "semantic_tags": ["makeup", "gain", "output"]
+        },
+        "Range": {
+          "description": "Maximum compression range (limits maximum gain reduction)",
+          "type": "db",
+          "unit": "dB",
+          "min": -40.0,
+          "max": 0.0,
+          "default": -40.0,
+          "semantic_tags": ["range", "limit"]
+        },
+        "Dry/Wet": {
+          "description": "Parallel compression mix",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 100.0,
+          "semantic_tags": ["mix", "wet", "dry", "parallel"]
+        }
+      },
+      "production_notes": "For vocal bus: Use 4:1 ratio, attack 10-30ms, auto release. Aim for 2-4dB gain reduction on peaks. Great for gluing layered vocals together. For master, use lighter settings with 2:1 and 1-2dB reduction.",
+      "common_vocal_settings": {
+        "vocal_bus_glue": {
+          "threshold": -8,
+          "ratio": 1,
+          "attack": 4,
+          "release": 6,
+          "description": "Standard vocal bus glue"
+        },
+        "aggressive_vocal_bus": {
+          "threshold": -15,
+          "ratio": 2,
+          "attack": 3,
+          "release": 3,
+          "description": "Heavy vocal bus compression"
+        }
+      }
+    },
+    "Saturator": {
+      "description": "Waveshaping distortion/saturation. Adds warmth, harmonics, and analog character.",
+      "category": "saturation",
+      "typical_use_cases": ["add_warmth", "add_harmonics", "analog_character", "gentle_distortion", "tape_emulation"],
+      "signal_flow_position": ["after_compression", "before_reverb"],
+      "parameters": {
+        "Drive": {
+          "description": "Amount of saturation/distortion",
+          "type": "gain",
+          "unit": "dB",
+          "min": -24.0,
+          "max": 24.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "subtle_warmth": {"min": 3, "max": 8, "description": "Gentle harmonic enhancement"},
+            "moderate_saturation": {"min": 10, "max": 16, "description": "Noticeable saturation"},
+            "heavy_distortion": {"min": 18, "max": 24, "description": "Aggressive distortion"}
+          },
+          "semantic_tags": ["drive", "amount", "saturation", "distortion"]
+        },
+        "Type": {
+          "description": "Saturation curve type (0=Analog Clip, 1=Soft Sine, 2=Medium Curve, 3=Hard Curve, 4=Sinoid Fold, 5=Digital Clip)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 5.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Analog Clip (warm)",
+            "1": "Soft Sine (subtle)",
+            "2": "Medium Curve (balanced)",
+            "3": "Hard Curve (aggressive)",
+            "4": "Sinoid Fold (unique)",
+            "5": "Digital Clip (harsh)"
+          },
+          "semantic_tags": ["type", "curve", "character", "mode"]
+        },
+        "Color": {
+          "description": "Adds high-frequency content before saturation",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["color", "brightness", "highs"]
+        },
+        "Base": {
+          "description": "Adds low-frequency content",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 20.0,
+          "max": 500.0,
+          "default": 100.0,
+          "semantic_tags": ["base", "low", "frequency"]
+        },
+        "Frequency": {
+          "description": "High frequency emphasis frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 500.0,
+          "max": 20000.0,
+          "default": 5000.0,
+          "semantic_tags": ["frequency", "high", "brightness"]
+        },
+        "Width": {
+          "description": "Width of high frequency band",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "semantic_tags": ["width", "band"]
+        },
+        "Depth": {
+          "description": "Depth of high frequency effect",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 0.0,
+          "semantic_tags": ["depth", "amount"]
+        },
+        "Output": {
+          "description": "Output level",
+          "type": "gain",
+          "unit": "dB",
+          "min": -24.0,
+          "max": 24.0,
+          "default": 0.0,
+          "semantic_tags": ["output", "level", "gain"]
+        },
+        "Dry/Wet": {
+          "description": "Mix between dry and saturated signal",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 100.0,
+          "typical_ranges": {
+            "full_saturation": {"value": 100, "description": "All saturated signal"},
+            "parallel_blend": {"min": 30, "max": 70, "description": "Blend for parallel saturation"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "blend"]
+        }
+      },
+      "production_notes": "For vocals: Use Analog Clip or Soft Sine for warmth. Start with 5-10dB drive and reduce wet to 50-70% for parallel saturation. Great for adding presence without harsh EQ. Use after compression to even out the saturation.",
+      "common_vocal_settings": {
+        "gentle_warmth": {
+          "drive": 6,
+          "type": 1,
+          "wet": 80,
+          "description": "Subtle analog warmth"
+        },
+        "tape_character": {
+          "drive": 10,
+          "type": 0,
+          "wet": 60,
+          "description": "Tape-like saturation"
+        },
+        "aggressive_edge": {
+          "drive": 15,
+          "type": 2,
+          "wet": 50,
+          "description": "Noticeable grit and edge"
+        }
+      }
+    },
+    "Reverb": {
+      "description": "Algorithmic reverb for creating space and depth. Essential for vocal ambiance.",
+      "category": "reverb",
+      "typical_use_cases": ["add_space", "create_depth", "ambiance", "room_simulation", "hall_effect"],
+      "signal_flow_position": ["last", "send_return"],
+      "parameters": {
+        "Decay Time": {
+          "description": "Reverb tail length",
+          "type": "time",
+          "unit": "s",
+          "min": 0.2,
+          "max": 60.0,
+          "default": 2.5,
+          "typical_ranges": {
+            "tight_room": {"min": 0.3, "max": 0.8, "description": "Small room feel"},
+            "medium_space": {"min": 1.0, "max": 2.0, "description": "Natural room/plate"},
+            "large_hall": {"min": 2.5, "max": 4.0, "description": "Large hall effect"},
+            "ambient_wash": {"min": 5.0, "max": 15.0, "description": "Long ambient tail"}
+          },
+          "semantic_tags": ["decay", "time", "length", "tail"]
+        },
+        "Size": {
+          "description": "Virtual room size",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 500.0,
+          "default": 100.0,
+          "typical_ranges": {
+            "small_room": {"min": 20, "max": 50, "description": "Intimate space"},
+            "medium_room": {"min": 60, "max": 120, "description": "Standard room"},
+            "large_hall": {"min": 150, "max": 300, "description": "Large space"}
+          },
+          "semantic_tags": ["size", "room", "space"]
+        },
+        "Pre Delay": {
+          "description": "Time before reverb starts (creates separation)",
+          "type": "time",
+          "unit": "ms",
+          "min": 0.0,
+          "max": 500.0,
+          "default": 5.0,
+          "typical_ranges": {
+            "tight": {"min": 0, "max": 20, "description": "No separation"},
+            "natural": {"min": 20, "max": 60, "description": "Natural room feel"},
+            "separated": {"min": 60, "max": 120, "description": "Clear separation from dry signal"}
+          },
+          "semantic_tags": ["predelay", "delay", "separation"]
+        },
+        "Input Hi Cut": {
+          "description": "High frequency cut on input (darker reverb)",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 500.0,
+          "max": 18000.0,
+          "default": 18000.0,
+          "semantic_tags": ["input", "high", "cut", "filter", "dark"]
+        },
+        "Input Lo Cut": {
+          "description": "Low frequency cut on input (cleaner reverb)",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 20.0,
+          "max": 1000.0,
+          "default": 20.0,
+          "semantic_tags": ["input", "low", "cut", "filter", "clean"]
+        },
+        "Density": {
+          "description": "Reverb reflection density",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "semantic_tags": ["density", "thickness"]
+        },
+        "Stereo": {
+          "description": "Stereo width of reverb",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 120.0,
+          "default": 100.0,
+          "semantic_tags": ["stereo", "width"]
+        },
+        "Chorus Amount": {
+          "description": "Amount of chorus modulation",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 0.0,
+          "semantic_tags": ["chorus", "modulation"]
+        },
+        "Dry/Wet": {
+          "description": "Mix between dry and wet signal",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 35.0,
+          "typical_ranges": {
+            "subtle": {"min": 10, "max": 20, "description": "Barely noticeable ambiance"},
+            "moderate": {"min": 20, "max": 35, "description": "Natural space"},
+            "lush": {"min": 35, "max": 50, "description": "Obvious reverb effect"},
+            "drenched": {"min": 50, "max": 80, "description": "Heavy reverb"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "blend"]
+        }
+      },
+      "production_notes": "For vocals: Use predelay (30-60ms) to keep vocal upfront. Cut lows from reverb input (200-400Hz) to prevent mud. Cut highs for warmer sound or keep for brightness. 1.5-2.5s decay for pop, shorter for hip-hop, longer for ballads. Use send/return for more control.",
+      "common_vocal_settings": {
+        "intimate_room": {
+          "decay": 0.8,
+          "size": 40,
+          "predelay": 10,
+          "wet": 15,
+          "description": "Close, intimate vocal"
+        },
+        "plate_vocal": {
+          "decay": 1.8,
+          "size": 80,
+          "predelay": 40,
+          "wet": 25,
+          "input_lo_cut": 300,
+          "description": "Classic plate reverb sound"
+        },
+        "large_hall": {
+          "decay": 3.0,
+          "size": 150,
+          "predelay": 60,
+          "wet": 30,
+          "description": "Large hall ambiance"
+        },
+        "ambient_wash": {
+          "decay": 6.0,
+          "size": 200,
+          "predelay": 80,
+          "wet": 40,
+          "chorus": 20,
+          "description": "Ethereal ambient sound"
+        }
+      }
+    },
+    "Delay": {
+      "description": "Digital delay effect. Creates echoes and rhythmic patterns.",
+      "category": "delay",
+      "typical_use_cases": ["echo", "slapback", "rhythmic_delay", "stereo_width", "depth"],
+      "signal_flow_position": ["last", "send_return", "before_reverb"],
+      "parameters": {
+        "L Delay Time": {
+          "description": "Left channel delay time",
+          "type": "time",
+          "unit": "ms",
+          "min": 1.0,
+          "max": 1000.0,
+          "default": 250.0,
+          "typical_ranges": {
+            "slapback": {"min": 40, "max": 120, "description": "Quick slapback echo"},
+            "eighth_note": {"min": 200, "max": 350, "description": "Rhythmic 8th note delay"},
+            "quarter_note": {"min": 400, "max": 600, "description": "Quarter note delay"}
+          },
+          "semantic_tags": ["delay", "time", "left", "echo"]
+        },
+        "R Delay Time": {
+          "description": "Right channel delay time",
+          "type": "time",
+          "unit": "ms",
+          "min": 1.0,
+          "max": 1000.0,
+          "default": 250.0,
+          "semantic_tags": ["delay", "time", "right", "echo"]
+        },
+        "L Sync": {
+          "description": "Sync left delay to tempo",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["sync", "tempo", "left"]
+        },
+        "R Sync": {
+          "description": "Sync right delay to tempo",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["sync", "tempo", "right"]
+        },
+        "Feedback": {
+          "description": "Amount of delayed signal fed back (more repeats)",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "typical_ranges": {
+            "single_echo": {"min": 0, "max": 20, "description": "Few repeats"},
+            "moderate_repeats": {"min": 30, "max": 50, "description": "Several repeats"},
+            "long_tail": {"min": 50, "max": 70, "description": "Many repeats"},
+            "infinite": {"min": 80, "max": 100, "description": "Near-infinite repeats"}
+          },
+          "semantic_tags": ["feedback", "repeats", "tail"]
+        },
+        "Filter Frequency": {
+          "description": "High-cut filter frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 200.0,
+          "max": 18000.0,
+          "default": 5000.0,
+          "semantic_tags": ["filter", "frequency", "high", "cut"]
+        },
+        "Dry/Wet": {
+          "description": "Mix between dry and delayed signal",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 40.0,
+          "typical_ranges": {
+            "subtle": {"min": 10, "max": 20, "description": "Barely noticeable delay"},
+            "moderate": {"min": 20, "max": 35, "description": "Audible but not overwhelming"},
+            "prominent": {"min": 35, "max": 50, "description": "Clear delay effect"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "blend"]
+        }
+      },
+      "production_notes": "For vocals: Use slapback (50-100ms) for thickening without obvious echo. Quarter note delay for rhythmic interest. Roll off highs (3-5kHz) to sit delay behind vocal. Use tempo sync for groove. Less feedback for clarity, more for ambient effects.",
+      "common_vocal_settings": {
+        "slapback": {
+          "delay_time": 80,
+          "feedback": 10,
+          "wet": 20,
+          "filter": 4000,
+          "description": "Classic slapback thickening"
+        },
+        "eighth_note_delay": {
+          "sync": true,
+          "feedback": 35,
+          "wet": 25,
+          "filter": 3500,
+          "description": "Rhythmic eighth note delay"
+        },
+        "stereo_throw": {
+          "l_delay": 300,
+          "r_delay": 450,
+          "feedback": 25,
+          "wet": 20,
+          "description": "Wide stereo delay"
+        }
+      }
+    },
+    "Multiband Dynamics": {
+      "description": "3-band dynamics processor. Use as multiband compressor or de-esser.",
+      "category": "dynamics",
+      "typical_use_cases": ["multiband_compression", "de_essing", "frequency_specific_dynamics", "mastering"],
+      "signal_flow_position": ["after_eq", "after_compressor", "before_saturation"],
+      "parameters": {
+        "Above Threshold (Low)": {
+          "description": "Threshold for low band compression",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -48.0,
+          "max": 0.0,
+          "default": 0.0,
+          "semantic_tags": ["threshold", "low", "above"]
+        },
+        "Above Threshold (Mid)": {
+          "description": "Threshold for mid band compression",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -48.0,
+          "max": 0.0,
+          "default": 0.0,
+          "semantic_tags": ["threshold", "mid", "above"]
+        },
+        "Above Threshold (High)": {
+          "description": "Threshold for high band compression",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -48.0,
+          "max": 0.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "de_essing": {"min": -24, "max": -12, "description": "Catch sibilance peaks"}
+          },
+          "semantic_tags": ["threshold", "high", "above", "de_ess"]
+        },
+        "Above Ratio (Low)": {
+          "description": "Compression ratio for low band",
+          "type": "ratio",
+          "min": 1.0,
+          "max": 16.0,
+          "default": 1.0,
+          "semantic_tags": ["ratio", "low", "above"]
+        },
+        "Above Ratio (Mid)": {
+          "description": "Compression ratio for mid band",
+          "type": "ratio",
+          "min": 1.0,
+          "max": 16.0,
+          "default": 1.0,
+          "semantic_tags": ["ratio", "mid", "above"]
+        },
+        "Above Ratio (High)": {
+          "description": "Compression ratio for high band",
+          "type": "ratio",
+          "min": 1.0,
+          "max": 16.0,
+          "default": 1.0,
+          "typical_ranges": {
+            "de_essing": {"min": 4, "max": 10, "description": "Strong compression for sibilance"}
+          },
+          "semantic_tags": ["ratio", "high", "above", "de_ess"]
+        },
+        "Low-Mid Crossover": {
+          "description": "Crossover frequency between low and mid bands",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 50.0,
+          "max": 1000.0,
+          "default": 120.0,
+          "semantic_tags": ["crossover", "frequency", "low", "mid"]
+        },
+        "Mid-High Crossover": {
+          "description": "Crossover frequency between mid and high bands",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 1000.0,
+          "max": 18000.0,
+          "default": 2500.0,
+          "typical_ranges": {
+            "de_essing": {"min": 4000, "max": 8000, "description": "Target sibilance range"}
+          },
+          "semantic_tags": ["crossover", "frequency", "mid", "high", "de_ess"]
+        },
+        "Output Gain": {
+          "description": "Overall output level",
+          "type": "gain",
+          "unit": "dB",
+          "min": -18.0,
+          "max": 18.0,
+          "default": 0.0,
+          "semantic_tags": ["output", "gain", "level"]
+        },
+        "Time": {
+          "description": "Attack/release time scaling",
+          "type": "percentage",
+          "unit": "%",
+          "min": 10.0,
+          "max": 400.0,
+          "default": 100.0,
+          "semantic_tags": ["time", "speed", "attack", "release"]
+        }
+      },
+      "production_notes": "For de-essing: Set mid-high crossover to 4-6kHz to target sibilance. Use high band compression with fast attack and 4-8:1 ratio. For multiband compression: Use moderate ratios (2-4:1) per band. Great for taming problematic frequencies without affecting entire signal.",
+      "common_vocal_settings": {
+        "de_esser": {
+          "mid_high_crossover": 5000,
+          "high_threshold": -20,
+          "high_ratio": 6,
+          "time": 50,
+          "description": "Basic de-essing setup"
+        },
+        "multiband_control": {
+          "low_threshold": -12,
+          "mid_threshold": -15,
+          "high_threshold": -18,
+          "low_ratio": 2,
+          "mid_ratio": 3,
+          "high_ratio": 2.5,
+          "description": "Balanced multiband compression"
+        }
+      }
+    },
+    "CLA-76": {
+      "description": "Waves CLA-76 FET compressor modeled after the 1176 hardware. Fast attack, punchy character. Signature of Chris Lord-Alge's vocal sound.",
+      "category": "compressor",
+      "vendor": "Waves",
+      "typical_use_cases": ["vocal_compression", "aggressive_compression", "parallel_compression", "drum_compression", "add_punch"],
+      "signal_flow_position": ["after_eq", "first_compressor"],
+      "parameters": {
+        "Input": {
+          "description": "Input gain — drives signal into the compressor. Higher values = more compression.",
+          "type": "gain",
+          "unit": "dB",
+          "min": -20.0,
+          "max": 60.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "gentle_vocal": {"min": 10, "max": 20, "description": "Light gain reduction, natural feel"},
+            "moderate_vocal": {"min": 20, "max": 35, "description": "Standard vocal compression"},
+            "aggressive_vocal": {"min": 35, "max": 50, "description": "Heavy compression, upfront sound"},
+            "parallel_crush": {"min": 45, "max": 60, "description": "Extreme compression for parallel blend"}
+          },
+          "semantic_tags": ["input", "gain", "drive", "threshold"]
+        },
+        "Output": {
+          "description": "Output gain / makeup gain",
+          "type": "gain",
+          "unit": "dB",
+          "min": -20.0,
+          "max": 60.0,
+          "default": 0.0,
+          "semantic_tags": ["output", "gain", "makeup", "level"]
+        },
+        "Attack": {
+          "description": "Attack time (1=slowest/20ms, 7=fastest/0.02ms). Note: reversed numbering — higher = faster.",
+          "type": "choice",
+          "min": 1.0,
+          "max": 7.0,
+          "default": 4.0,
+          "choices": {
+            "1": "Slowest (~20ms)",
+            "2": "Slow (~10ms)",
+            "3": "Medium-Slow (~5ms)",
+            "4": "Medium (~1ms)",
+            "5": "Medium-Fast (~0.5ms)",
+            "6": "Fast (~0.1ms)",
+            "7": "Fastest (~0.02ms)"
+          },
+          "typical_ranges": {
+            "preserve_transients": {"min": 1, "max": 3, "description": "Let transients through for punch"},
+            "standard_vocal": {"min": 3, "max": 5, "description": "Balanced vocal compression"},
+            "fast_control": {"min": 5, "max": 7, "description": "Tight transient control"}
+          },
+          "semantic_tags": ["attack", "time", "transient", "speed"]
+        },
+        "Release": {
+          "description": "Release time (1=slowest/~1.1s, 7=fastest/~50ms). Higher = faster.",
+          "type": "choice",
+          "min": 1.0,
+          "max": 7.0,
+          "default": 5.0,
+          "choices": {
+            "1": "Slowest (~1100ms)",
+            "2": "Slow (~800ms)",
+            "3": "Medium-Slow (~400ms)",
+            "4": "Medium (~200ms)",
+            "5": "Medium-Fast (~100ms)",
+            "6": "Fast (~70ms)",
+            "7": "Fastest (~50ms)"
+          },
+          "typical_ranges": {
+            "smooth_vocal": {"min": 1, "max": 3, "description": "Smooth, sustained release"},
+            "standard_vocal": {"min": 3, "max": 5, "description": "Balanced recovery"},
+            "pumping_effect": {"min": 5, "max": 7, "description": "Fast recovery, pumping character"}
+          },
+          "semantic_tags": ["release", "time", "recovery", "speed"]
+        },
+        "Ratio": {
+          "description": "Compression ratio (4, 8, 12, 20, or All — all buttons in for limiting)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 4.0,
+          "default": 1.0,
+          "choices": {
+            "0": "4:1 (gentle)",
+            "1": "8:1 (moderate)",
+            "2": "12:1 (aggressive)",
+            "3": "20:1 (heavy limiting)",
+            "4": "All (Brit mode — all buttons in)"
+          },
+          "typical_ranges": {
+            "gentle_vocal": {"value": 0, "description": "4:1 for subtle control"},
+            "standard_vocal": {"value": 1, "description": "8:1 for punchy vocal"},
+            "aggressive_vocal": {"min": 2, "max": 4, "description": "12:1+ for heavy compression"}
+          },
+          "semantic_tags": ["ratio", "amount", "intensity", "compression"]
+        },
+        "Analog": {
+          "description": "Analog noise/hum emulation (Off=50, 60Hz hum, Noise)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Off",
+            "1": "50Hz (mains hum)",
+            "2": "60Hz (mains hum)"
+          },
+          "semantic_tags": ["analog", "noise", "character", "hum"]
+        },
+        "Revision": {
+          "description": "Hardware revision model (Rev A = bluesripe, Rev E = blackface)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Rev A (Bluestripe — brighter, more aggressive)",
+            "1": "Rev E (Blackface — warmer, smoother)"
+          },
+          "semantic_tags": ["revision", "model", "character", "color"]
+        },
+        "Mix": {
+          "description": "Dry/wet mix for parallel compression",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 100.0,
+          "typical_ranges": {
+            "full": {"value": 100, "description": "All compressed signal"},
+            "parallel": {"min": 30, "max": 70, "description": "Parallel compression blend"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "parallel", "blend"]
+        }
+      },
+      "production_notes": "Classic vocal compressor. For punchy vocals: Input around 20-30, 8:1 or 12:1, attack 3-5, release 5. Rev A for brighter, Rev E for warmer. The 'All buttons' (Brit mode) trick gives a unique distorted compression. Great for parallel compression — crank input, mix at 30-50%.",
+      "common_vocal_settings": {
+        "punchy_vocal": {
+          "input": 25,
+          "output": 15,
+          "ratio": 1,
+          "attack": 4,
+          "release": 5,
+          "revision": 0,
+          "description": "Punchy, upfront vocal — Chris Lord-Alge style"
+        },
+        "gentle_vocal": {
+          "input": 15,
+          "output": 10,
+          "ratio": 0,
+          "attack": 3,
+          "release": 3,
+          "revision": 1,
+          "description": "Transparent vocal leveling"
+        },
+        "parallel_crush": {
+          "input": 45,
+          "output": 20,
+          "ratio": 4,
+          "attack": 7,
+          "release": 7,
+          "mix": 40,
+          "description": "Heavy parallel compression for density"
+        }
+      }
+    },
+    "CLA-2A": {
+      "description": "Waves CLA-2A optical compressor modeled after the LA-2A hardware. Smooth, musical compression with simple controls. Iconic for vocals.",
+      "category": "compressor",
+      "vendor": "Waves",
+      "typical_use_cases": ["vocal_compression", "gentle_leveling", "smooth_compression", "bass_compression", "vocal_bus"],
+      "signal_flow_position": ["after_eq", "first_compressor", "second_compressor"],
+      "parameters": {
+        "Peak Reduction": {
+          "description": "Amount of gain reduction (compression amount). Higher = more compression.",
+          "type": "gain",
+          "unit": "dB",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 40.0,
+          "typical_ranges": {
+            "gentle_vocal": {"min": 20, "max": 35, "description": "Light, transparent leveling"},
+            "moderate_vocal": {"min": 35, "max": 55, "description": "Standard vocal compression"},
+            "heavy_vocal": {"min": 55, "max": 75, "description": "Heavy compression, sustained sound"},
+            "extreme": {"min": 75, "max": 100, "description": "Maximum compression"}
+          },
+          "semantic_tags": ["peak_reduction", "amount", "compression", "threshold"]
+        },
+        "Gain": {
+          "description": "Output gain / makeup gain",
+          "type": "gain",
+          "unit": "dB",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "semantic_tags": ["gain", "output", "makeup", "level"]
+        },
+        "Mode": {
+          "description": "Compression mode — Compress (smooth, program-dependent) or Limit (faster, more aggressive)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Compress (smooth, optical — best for vocals)",
+            "1": "Limit (faster ratio, more aggressive)"
+          },
+          "semantic_tags": ["mode", "compress", "limit", "type"]
+        },
+        "Analog": {
+          "description": "Analog noise/hum emulation",
+          "type": "choice",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Off",
+            "1": "50Hz",
+            "2": "60Hz"
+          },
+          "semantic_tags": ["analog", "noise", "character"]
+        },
+        "Mix": {
+          "description": "Dry/wet mix for parallel compression",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 100.0,
+          "semantic_tags": ["mix", "wet", "dry", "parallel", "blend"]
+        }
+      },
+      "production_notes": "The LA-2A is the go-to vocal compressor for smooth, musical compression. The optical circuit responds slowly, making it inherently gentle. Use Compress mode for vocals (Limit for bass or drums). Peak Reduction 35-55 for standard vocals. Simple controls — just dial Peak Reduction until you see 3-7dB of gain reduction. Often paired after a CLA-76 for serial compression.",
+      "common_vocal_settings": {
+        "smooth_vocal": {
+          "peak_reduction": 40,
+          "gain": 50,
+          "mode": 0,
+          "description": "Classic smooth LA-2A vocal compression"
+        },
+        "heavy_leveling": {
+          "peak_reduction": 60,
+          "gain": 55,
+          "mode": 0,
+          "description": "Heavy but musical vocal leveling"
+        },
+        "vocal_limit": {
+          "peak_reduction": 45,
+          "gain": 50,
+          "mode": 1,
+          "description": "Faster, more controlled compression"
+        }
+      }
+    },
+    "SSL E-Channel": {
+      "description": "Waves SSL E-Channel strip modeled after the SSL 4000 E-series console. Combines EQ, dynamics (compressor + gate/expander), and filters in one channel strip.",
+      "category": "channel_strip",
+      "vendor": "Waves",
+      "typical_use_cases": ["vocal_channel_strip", "full_processing", "eq_and_compression", "mix_channel", "drum_processing"],
+      "signal_flow_position": ["first", "channel_strip"],
+      "parameters": {
+        "HP Freq": {
+          "description": "High-pass filter frequency (18dB/oct)",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 16.0,
+          "max": 350.0,
+          "default": 16.0,
+          "typical_ranges": {
+            "vocal_rumble_cut": {"min": 60, "max": 120, "description": "Remove low-end rumble from vocals"},
+            "instrument_cleanup": {"min": 30, "max": 80, "description": "Clean up instrument low end"}
+          },
+          "semantic_tags": ["highpass", "filter", "frequency", "hp", "rumble"]
+        },
+        "LP Freq": {
+          "description": "Low-pass filter frequency (12dB/oct)",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 1500.0,
+          "max": 22000.0,
+          "default": 22000.0,
+          "semantic_tags": ["lowpass", "filter", "frequency", "lp", "air"]
+        },
+        "LF Gain": {
+          "description": "Low frequency EQ gain (bell or shelf)",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "semantic_tags": ["low", "gain", "eq", "bass", "warmth"]
+        },
+        "LF Freq": {
+          "description": "Low frequency EQ frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 30.0,
+          "max": 450.0,
+          "default": 200.0,
+          "semantic_tags": ["low", "frequency", "eq"]
+        },
+        "LF Bell": {
+          "description": "Low frequency EQ shape: shelf (off) or bell (on)",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "semantic_tags": ["low", "bell", "shelf", "shape"]
+        },
+        "LMF Gain": {
+          "description": "Low-mid frequency EQ gain",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "cut_mud": {"min": -6, "max": -2, "description": "Cut muddy buildup"}
+          },
+          "semantic_tags": ["low_mid", "gain", "eq", "mud"]
+        },
+        "LMF Freq": {
+          "description": "Low-mid frequency EQ frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 200.0,
+          "max": 2500.0,
+          "default": 600.0,
+          "typical_ranges": {
+            "vocal_mud": {"min": 200, "max": 500, "description": "Target vocal mud frequencies"}
+          },
+          "semantic_tags": ["low_mid", "frequency", "eq"]
+        },
+        "LMF Q": {
+          "description": "Low-mid frequency EQ Q/bandwidth",
+          "type": "q",
+          "min": 0.1,
+          "max": 5.0,
+          "default": 1.0,
+          "semantic_tags": ["low_mid", "q", "bandwidth"]
+        },
+        "HMF Gain": {
+          "description": "High-mid frequency EQ gain",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "add_presence": {"min": 1, "max": 4, "description": "Add vocal presence"}
+          },
+          "semantic_tags": ["high_mid", "gain", "eq", "presence"]
+        },
+        "HMF Freq": {
+          "description": "High-mid frequency EQ frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 600.0,
+          "max": 7000.0,
+          "default": 3000.0,
+          "typical_ranges": {
+            "vocal_presence": {"min": 2000, "max": 5000, "description": "Vocal presence/clarity range"}
+          },
+          "semantic_tags": ["high_mid", "frequency", "eq", "presence"]
+        },
+        "HMF Q": {
+          "description": "High-mid frequency EQ Q/bandwidth",
+          "type": "q",
+          "min": 0.1,
+          "max": 5.0,
+          "default": 1.0,
+          "semantic_tags": ["high_mid", "q", "bandwidth"]
+        },
+        "HF Gain": {
+          "description": "High frequency EQ gain (bell or shelf)",
+          "type": "gain",
+          "unit": "dB",
+          "min": -15.0,
+          "max": 15.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "add_air": {"min": 1, "max": 4, "description": "Add air and sparkle"}
+          },
+          "semantic_tags": ["high", "gain", "eq", "air", "brightness"]
+        },
+        "HF Freq": {
+          "description": "High frequency EQ frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 1500.0,
+          "max": 16000.0,
+          "default": 8000.0,
+          "semantic_tags": ["high", "frequency", "eq", "air"]
+        },
+        "HF Bell": {
+          "description": "High frequency EQ shape: shelf (off) or bell (on)",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "semantic_tags": ["high", "bell", "shelf", "shape"]
+        },
+        "EQ On": {
+          "description": "Enable/disable EQ section",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["eq", "enable", "bypass"]
+        },
+        "Dyn On": {
+          "description": "Enable/disable dynamics section",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 1.0,
+          "semantic_tags": ["dynamics", "enable", "bypass"]
+        },
+        "Comp Threshold": {
+          "description": "Compressor threshold",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -40.0,
+          "max": 0.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "gentle_vocal": {"min": -15, "max": -8, "description": "Light vocal compression"},
+            "moderate_vocal": {"min": -24, "max": -15, "description": "Standard vocal compression"},
+            "heavy_vocal": {"min": -35, "max": -24, "description": "Heavy compression"}
+          },
+          "semantic_tags": ["compressor", "threshold", "dynamics"]
+        },
+        "Comp Ratio": {
+          "description": "Compressor ratio",
+          "type": "ratio",
+          "min": 1.0,
+          "max": 20.0,
+          "default": 2.0,
+          "typical_ranges": {
+            "gentle": {"min": 1.5, "max": 3, "description": "Subtle compression"},
+            "moderate": {"min": 3, "max": 6, "description": "Standard vocal ratio"},
+            "aggressive": {"min": 6, "max": 20, "description": "Heavy limiting"}
+          },
+          "semantic_tags": ["compressor", "ratio", "dynamics"]
+        },
+        "Comp Attack": {
+          "description": "Compressor attack time — Fast or Slow (SSL-style switched attack)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Fast (1ms — catches transients)",
+            "1": "Slow (30ms — preserves transients)"
+          },
+          "semantic_tags": ["compressor", "attack", "time"]
+        },
+        "Comp Release": {
+          "description": "Compressor release time (100ms to 4s, or Auto)",
+          "type": "time",
+          "unit": "ms",
+          "min": 100.0,
+          "max": 4000.0,
+          "default": 300.0,
+          "typical_ranges": {
+            "fast": {"min": 100, "max": 200, "description": "Quick recovery"},
+            "medium": {"min": 200, "max": 600, "description": "Balanced recovery"},
+            "slow": {"min": 600, "max": 1500, "description": "Smooth sustained release"}
+          },
+          "semantic_tags": ["compressor", "release", "time"]
+        },
+        "Filters to Dyn SC": {
+          "description": "Route HP/LP filters to dynamics sidechain",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "semantic_tags": ["sidechain", "filter", "dynamics"]
+        },
+        "Dyn to Ch Out": {
+          "description": "Dynamics section position: pre-EQ (off) or post-EQ (on)",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "semantic_tags": ["routing", "order", "pre", "post"]
+        }
+      },
+      "production_notes": "The SSL E-Channel is a complete vocal chain in one plugin. For vocals: HP at 80-100Hz, cut mud with LMF at 300-500Hz, boost presence with HMF at 2-4kHz, add air with HF shelf at 8-12kHz. Compressor with 3-4:1 ratio, slow attack to preserve articulation. Use 'Filters to Dyn SC' to prevent bass from triggering the compressor.",
+      "common_vocal_settings": {
+        "clean_vocal": {
+          "hp_freq": 80,
+          "lmf_gain": -2.5,
+          "lmf_freq": 350,
+          "hmf_gain": 2.5,
+          "hmf_freq": 3000,
+          "hf_gain": 2,
+          "hf_freq": 10000,
+          "comp_threshold": -15,
+          "comp_ratio": 3,
+          "comp_attack": 1,
+          "comp_release": 300,
+          "description": "Clean, polished vocal — pop/R&B"
+        },
+        "aggressive_vocal": {
+          "hp_freq": 100,
+          "lmf_gain": -4,
+          "lmf_freq": 400,
+          "hmf_gain": 4,
+          "hmf_freq": 3500,
+          "comp_threshold": -25,
+          "comp_ratio": 6,
+          "comp_attack": 0,
+          "comp_release": 200,
+          "description": "Aggressive, upfront vocal — hip hop/rock"
+        }
+      }
+    },
+    "SSL G-Master Buss Compressor": {
+      "description": "Waves SSL G-Master Buss Compressor modeled after the SSL 4000 G bus compressor. The industry-standard mix bus and vocal bus glue compressor.",
+      "category": "compressor",
+      "vendor": "Waves",
+      "typical_use_cases": ["bus_glue", "mix_bus", "vocal_bus", "drum_bus", "group_cohesion", "mastering"],
+      "signal_flow_position": ["bus", "group", "master", "last_compressor"],
+      "parameters": {
+        "Threshold": {
+          "description": "Compression threshold",
+          "type": "threshold",
+          "unit": "dB",
+          "min": -20.0,
+          "max": 0.0,
+          "default": 0.0,
+          "typical_ranges": {
+            "light_glue": {"min": -6, "max": -2, "description": "1-3dB reduction for subtle glue"},
+            "moderate_glue": {"min": -12, "max": -6, "description": "3-6dB reduction for cohesion"},
+            "heavy_compression": {"min": -20, "max": -12, "description": "Strong bus compression"}
+          },
+          "semantic_tags": ["threshold", "level", "dynamics"]
+        },
+        "Ratio": {
+          "description": "Compression ratio (2, 4, or 10)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.0,
+          "choices": {
+            "0": "2:1 (gentle glue)",
+            "1": "4:1 (moderate)",
+            "2": "10:1 (aggressive)"
+          },
+          "semantic_tags": ["ratio", "amount", "compression"]
+        },
+        "Attack": {
+          "description": "Attack time",
+          "type": "choice",
+          "min": 0.0,
+          "max": 5.0,
+          "default": 2.0,
+          "choices": {
+            "0": "0.1ms",
+            "1": "0.3ms",
+            "2": "1ms",
+            "3": "3ms",
+            "4": "10ms",
+            "5": "30ms"
+          },
+          "typical_ranges": {
+            "fast_control": {"min": 0, "max": 2, "description": "Fast attack, catches transients"},
+            "preserve_punch": {"min": 3, "max": 5, "description": "Slow attack, lets transients through"}
+          },
+          "semantic_tags": ["attack", "time", "transient"]
+        },
+        "Release": {
+          "description": "Release time (or Auto)",
+          "type": "choice",
+          "min": 0.0,
+          "max": 4.0,
+          "default": 2.0,
+          "choices": {
+            "0": "0.1s",
+            "1": "0.3s",
+            "2": "0.6s",
+            "3": "1.2s",
+            "4": "Auto"
+          },
+          "typical_ranges": {
+            "pumping": {"min": 0, "max": 1, "description": "Fast release, audible pumping"},
+            "smooth": {"min": 2, "max": 3, "description": "Smooth, natural recovery"},
+            "program_dependent": {"value": 4, "description": "Auto release — adapts to material"}
+          },
+          "semantic_tags": ["release", "time", "recovery"]
+        },
+        "Makeup": {
+          "description": "Makeup gain to compensate for compression",
+          "type": "gain",
+          "unit": "dB",
+          "min": -5.0,
+          "max": 15.0,
+          "default": 0.0,
+          "semantic_tags": ["makeup", "gain", "output", "level"]
+        },
+        "Analog": {
+          "description": "Analog noise/hum modeling",
+          "type": "choice",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.0,
+          "choices": {
+            "0": "Off",
+            "1": "50Hz",
+            "2": "60Hz"
+          },
+          "semantic_tags": ["analog", "noise", "character"]
+        },
+        "Rate-S": {
+          "description": "Crossover for split-band sidechain detection",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 20.0,
+          "max": 350.0,
+          "default": 100.0,
+          "semantic_tags": ["sidechain", "crossover", "frequency"]
+        },
+        "Fade": {
+          "description": "Fade-out on release tail",
+          "type": "time",
+          "unit": "ms",
+          "min": 0.0,
+          "max": 5000.0,
+          "default": 0.0,
+          "semantic_tags": ["fade", "release", "tail"]
+        }
+      },
+      "production_notes": "The SSL G-Master Buss Compressor is the go-to for mix bus glue. For mix bus: 4:1, 10ms attack, auto release, threshold for 2-3dB reduction. For vocal bus: 2:1, 3-10ms attack, 0.3-0.6s release, threshold for 1-3dB reduction. Keep it subtle — this is for cohesion, not heavy compression.",
+      "common_vocal_settings": {
+        "vocal_bus_glue": {
+          "threshold": -6,
+          "ratio": 0,
+          "attack": 3,
+          "release": 4,
+          "description": "Subtle vocal bus glue — 1-3dB reduction"
+        },
+        "aggressive_bus": {
+          "threshold": -12,
+          "ratio": 1,
+          "attack": 2,
+          "release": 2,
+          "description": "Heavier vocal bus compression"
+        },
+        "mix_bus": {
+          "threshold": -4,
+          "ratio": 1,
+          "attack": 4,
+          "release": 4,
+          "description": "Standard mix bus glue"
+        }
+      }
+    },
+    "H-Reverb": {
+      "description": "Waves H-Reverb hybrid reverb combining algorithmic and convolution reverb technologies. Rich, musical reverb with advanced tail control.",
+      "category": "reverb",
+      "vendor": "Waves",
+      "typical_use_cases": ["add_space", "vocal_reverb", "plate_reverb", "hall_reverb", "ambient_effects", "creative_reverb"],
+      "signal_flow_position": ["last", "send_return"],
+      "parameters": {
+        "Time": {
+          "description": "Reverb decay time",
+          "type": "time",
+          "unit": "s",
+          "min": 0.1,
+          "max": 30.0,
+          "default": 2.0,
+          "typical_ranges": {
+            "tight_room": {"min": 0.3, "max": 0.8, "description": "Small room feel"},
+            "plate": {"min": 1.0, "max": 2.0, "description": "Classic plate reverb"},
+            "medium_hall": {"min": 2.0, "max": 3.5, "description": "Medium hall/chamber"},
+            "large_hall": {"min": 3.5, "max": 6.0, "description": "Large hall"},
+            "ambient": {"min": 6.0, "max": 20.0, "description": "Long ambient wash"}
+          },
+          "semantic_tags": ["time", "decay", "length", "tail"]
+        },
+        "Size": {
+          "description": "Virtual room size",
+          "type": "percentage",
+          "unit": "%",
+          "min": 10.0,
+          "max": 100.0,
+          "default": 50.0,
+          "typical_ranges": {
+            "small": {"min": 10, "max": 30, "description": "Intimate space"},
+            "medium": {"min": 30, "max": 60, "description": "Standard room"},
+            "large": {"min": 60, "max": 100, "description": "Large space"}
+          },
+          "semantic_tags": ["size", "room", "space"]
+        },
+        "Pre Delay": {
+          "description": "Time before reverb onset",
+          "type": "time",
+          "unit": "ms",
+          "min": 0.0,
+          "max": 500.0,
+          "default": 20.0,
+          "typical_ranges": {
+            "tight": {"min": 0, "max": 15, "description": "No separation"},
+            "vocal_standard": {"min": 20, "max": 60, "description": "Keeps vocal upfront"},
+            "separated": {"min": 60, "max": 120, "description": "Clear dry/wet separation"}
+          },
+          "semantic_tags": ["predelay", "delay", "separation"]
+        },
+        "Density": {
+          "description": "Early reflection density",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "semantic_tags": ["density", "reflections", "thickness"]
+        },
+        "Damping": {
+          "description": "High-frequency damping — higher values darken the reverb tail",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 500.0,
+          "max": 20000.0,
+          "default": 8000.0,
+          "typical_ranges": {
+            "dark": {"min": 1000, "max": 3000, "description": "Dark, warm reverb tail"},
+            "natural": {"min": 3000, "max": 8000, "description": "Natural decay"},
+            "bright": {"min": 8000, "max": 16000, "description": "Bright, airy tail"}
+          },
+          "semantic_tags": ["damping", "high", "frequency", "dark", "bright"]
+        },
+        "ER/Tail Mix": {
+          "description": "Balance between early reflections and late reverb tail",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50.0,
+          "semantic_tags": ["early_reflections", "tail", "balance", "mix"]
+        },
+        "Lo Cut": {
+          "description": "Input low-cut filter frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 20.0,
+          "max": 1000.0,
+          "default": 20.0,
+          "typical_ranges": {
+            "vocal": {"min": 150, "max": 400, "description": "Remove low-end from reverb for clarity"}
+          },
+          "semantic_tags": ["lowcut", "filter", "low", "cleanup"]
+        },
+        "Hi Cut": {
+          "description": "Input high-cut filter frequency",
+          "type": "frequency",
+          "unit": "Hz",
+          "min": 1000.0,
+          "max": 20000.0,
+          "default": 18000.0,
+          "typical_ranges": {
+            "warm": {"min": 4000, "max": 8000, "description": "Darken reverb input"},
+            "open": {"min": 10000, "max": 18000, "description": "Allow bright reverb"}
+          },
+          "semantic_tags": ["hicut", "filter", "high", "dark", "bright"]
+        },
+        "Dry/Wet": {
+          "description": "Mix between dry and reverb signal",
+          "type": "percentage",
+          "unit": "%",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 30.0,
+          "typical_ranges": {
+            "subtle": {"min": 10, "max": 20, "description": "Barely noticeable depth"},
+            "moderate": {"min": 20, "max": 35, "description": "Natural space"},
+            "lush": {"min": 35, "max": 50, "description": "Obvious reverb"},
+            "drenched": {"min": 50, "max": 80, "description": "Heavy reverb effect"}
+          },
+          "semantic_tags": ["mix", "wet", "dry", "blend"]
+        },
+        "Output": {
+          "description": "Output level",
+          "type": "gain",
+          "unit": "dB",
+          "min": -24.0,
+          "max": 12.0,
+          "default": 0.0,
+          "semantic_tags": ["output", "gain", "level"]
+        },
+        "Reverse": {
+          "description": "Enable reverse reverb effect",
+          "type": "boolean",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "semantic_tags": ["reverse", "effect", "creative"]
+        },
+        "Build-Up": {
+          "description": "Reverse build-up time (only active when Reverse is on)",
+          "type": "time",
+          "unit": "ms",
+          "min": 100.0,
+          "max": 5000.0,
+          "default": 1000.0,
+          "semantic_tags": ["buildup", "reverse", "time"]
+        }
+      },
+      "production_notes": "H-Reverb is a premium vocal reverb. For pop vocals: plate preset, 1.5-2s decay, predelay 30-50ms, lo cut at 200-300Hz to prevent mud. For R&B/hip-hop: shorter decay (0.8-1.5s), heavier damping. For ambient/indie: long decay (4-8s), moderate density, lo cut at 150Hz. The ER/Tail mix lets you dial in room character vs. ambiance.",
+      "common_vocal_settings": {
+        "pop_plate": {
+          "time": 1.8,
+          "size": 50,
+          "predelay": 40,
+          "damping": 6000,
+          "lo_cut": 250,
+          "wet": 25,
+          "description": "Classic pop vocal plate"
+        },
+        "hiphop_room": {
+          "time": 0.8,
+          "size": 30,
+          "predelay": 20,
+          "damping": 4000,
+          "lo_cut": 300,
+          "wet": 15,
+          "description": "Tight room for hip-hop vocals"
+        },
+        "ambient_wash": {
+          "time": 5.0,
+          "size": 80,
+          "predelay": 60,
+          "damping": 8000,
+          "lo_cut": 150,
+          "wet": 35,
+          "description": "Ethereal ambient reverb"
+        },
+        "dark_hall": {
+          "time": 3.0,
+          "size": 70,
+          "predelay": 50,
+          "damping": 2500,
+          "lo_cut": 200,
+          "hi_cut": 6000,
+          "wet": 30,
+          "description": "Dark, warm hall reverb"
+        }
+      }
+    }
+  },
+  "semantic_intent_mapping": {
+    "cut_mud": {
+      "description": "Remove muddy low-mid frequencies that cloud vocals",
+      "target_frequency_range": [200, 400],
+      "suggested_plugin": "EQ Eight",
+      "suggested_action": "cut",
+      "suggested_q": 1.5,
+      "suggested_gain_range": [-6, -2]
+    },
+    "add_presence": {
+      "description": "Add clarity and forward presence to vocals",
+      "target_frequency_range": [2000, 5000],
+      "suggested_plugin": "EQ Eight",
+      "suggested_action": "boost",
+      "suggested_q": 1.0,
+      "suggested_gain_range": [1, 4]
+    },
+    "add_air": {
+      "description": "Add brightness and airiness to vocals",
+      "target_frequency_range": [8000, 12000],
+      "suggested_plugin": "EQ Eight",
+      "suggested_action": "shelf_boost",
+      "suggested_gain_range": [2, 5]
+    },
+    "add_warmth": {
+      "description": "Add analog warmth and harmonic richness",
+      "suggested_plugin": "Saturator",
+      "suggested_drive_range": [4, 10],
+      "suggested_type": "Analog Clip"
+    },
+    "control_dynamics": {
+      "description": "Even out volume variations in vocal performance",
+      "suggested_plugin": "Compressor",
+      "suggested_ratio_range": [3, 6],
+      "suggested_threshold_range": [-24, -15]
+    },
+    "aggressive_compression": {
+      "description": "Heavy compression for upfront, in-your-face vocals",
+      "suggested_plugin": "Compressor",
+      "suggested_ratio_range": [6, 12],
+      "suggested_threshold_range": [-30, -24],
+      "suggested_attack": "fast"
+    },
+    "add_space": {
+      "description": "Add reverb ambiance and spatial depth",
+      "suggested_plugin": "Reverb",
+      "suggested_decay_range": [1.0, 2.5],
+      "suggested_wet_range": [15, 35]
+    },
+    "de_ess": {
+      "description": "Control harsh sibilance (S and T sounds)",
+      "suggested_plugin": "Multiband Dynamics",
+      "target_frequency_range": [4000, 8000],
+      "suggested_ratio_range": [4, 10]
+    },
+    "add_echo": {
+      "description": "Add delay/echo effects",
+      "suggested_plugin": "Delay",
+      "suggested_time_range": [100, 500],
+      "suggested_feedback_range": [20, 50]
+    },
+    "glue": {
+      "description": "Add cohesion to grouped or layered vocals",
+      "suggested_plugin": "Glue Compressor",
+      "suggested_ratio": 1,
+      "suggested_reduction_range": [2, 4]
+    }
+  },
+  "signal_flow_recommendations": {
+    "standard_vocal_chain": [
+      {"position": 1, "plugin": "EQ Eight", "purpose": "high_pass_and_cleanup"},
+      {"position": 2, "plugin": "Compressor", "purpose": "dynamics_control"},
+      {"position": 3, "plugin": "EQ Eight", "purpose": "tonal_shaping"},
+      {"position": 4, "plugin": "Saturator", "purpose": "warmth"},
+      {"position": 5, "plugin": "Delay", "purpose": "depth"},
+      {"position": 6, "plugin": "Reverb", "purpose": "ambiance"}
+    ],
+    "aggressive_vocal_chain": [
+      {"position": 1, "plugin": "EQ Eight", "purpose": "high_pass"},
+      {"position": 2, "plugin": "Compressor", "purpose": "heavy_compression"},
+      {"position": 3, "plugin": "Saturator", "purpose": "distortion"},
+      {"position": 4, "plugin": "EQ Eight", "purpose": "presence_boost"},
+      {"position": 5, "plugin": "Glue Compressor", "purpose": "glue"},
+      {"position": 6, "plugin": "Delay", "purpose": "slapback"}
+    ],
+    "intimate_vocal_chain": [
+      {"position": 1, "plugin": "EQ Eight", "purpose": "gentle_cleanup"},
+      {"position": 2, "plugin": "Compressor", "purpose": "light_compression"},
+      {"position": 3, "plugin": "Reverb", "purpose": "subtle_room"}
+    ]
+  }
+}
+

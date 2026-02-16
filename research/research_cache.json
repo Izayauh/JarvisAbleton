@@ -1,0 +1,58 @@
+{
+  "entries": [
+    {
+      "query_key": "new artist vocal chain",
+      "original_query": "new artist vocal chain",
+      "answer": "fresh",
+      "route": "single_shot",
+      "created_at": "2026-02-14T03:17:57.503459",
+      "last_hit_at": "2026-02-14T03:17:57.503459",
+      "hit_count": 0
+    },
+    {
+      "query_key": "future vocal chain",
+      "original_query": "future vocal chain",
+      "answer": "fresh",
+      "route": "single_shot",
+      "created_at": "2026-02-14T03:17:57.110232",
+      "last_hit_at": "2026-02-14T03:17:57.110232",
+      "hit_count": 0
+    },
+    {
+      "query_key": "travis scott vocal chain",
+      "original_query": "Travis Scott Vocal Chain",
+      "answer": "Pitch-forward trap vocals with controlled dynamics, bright top-end, and slightly gritty harmonic density. The lead sits upfront while time-based effects create width and depth without washing out articulation. The overall sound is polished, compressed, and atmospheric.",
+      "route": "single_shot",
+      "created_at": "2026-02-14T02:30:24.086342",
+      "last_hit_at": "2026-02-14T02:34:19.332500",
+      "hit_count": 0
+    },
+    {
+      "query_key": "test query",
+      "original_query": "test query",
+      "answer": "Generic vocal chain \u2014 LLM research was unavailable.",
+      "route": "single_shot",
+      "created_at": "2026-02-14T01:50:03.027040",
+      "last_hit_at": "2026-02-14T01:50:03.027040",
+      "hit_count": 0
+    },
+    {
+      "query_key": "artist vocal chain",
+      "original_query": "artist vocal chain",
+      "answer": "Generic vocal chain \u2014 LLM research was unavailable.",
+      "route": "single_shot",
+      "created_at": "2026-02-14T01:50:02.977962",
+      "last_hit_at": "2026-02-14T01:50:02.995071",
+      "hit_count": 0
+    },
+    {
+      "query_key": "cached query",
+      "original_query": "cached query",
+      "answer": "Cached result",
+      "route": "",
+      "created_at": "2026-02-14T01:50:02.977962",
+      "last_hit_at": "2026-02-14T01:50:02.977962",
+      "hit_count": 1
+    }
+  ]
+}

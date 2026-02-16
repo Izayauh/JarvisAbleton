@@ -1,0 +1,45 @@
+# --- ABLETON & AUDIO ---
+# Ignore large binary project files and backups
+*.als
+*.alp
+*.adv
+*.adg
+Backup/
+"Ableton Project Info/"
+
+# Ignore audio analysis and temporary files
+*.asd
+*.decoded
+*.tmp
+Samples/
+Processed/
+
+# --- PYTHON & AI ---
+# Ignore compiled code and environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# --- GENERAL CLAUDE OPTIMIZATION ---
+# Ignore large documentation or build folders Claude doesn't need to "read"
+dist/
+build/
+node_modules/
+.git/
+.DS_Store
+
+# Ignore your Jarvis logs or heavy AI training data
+*.log
+data/
+outputs/
+
+# Additional JarvisAbleton-specific ignores
+temp_crash_report/
+debug.log
+test_output.txt
+.cursor/
+.claude/

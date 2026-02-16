@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis-Ableton Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0f 100%);
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #00d9ff;
+            margin-bottom: 5px;
+        }
+
+        .header p { color: #666; font-size: 0.9rem; }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .view-btn {
+            padding: 10px 25px;
+            background: transparent;
+            border: 2px solid #333;
+            color: #888;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover { border-color: #00d9ff; color: #00d9ff; }
+        .view-btn.active {
+            background: #00d9ff;
+            border-color: #00d9ff;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .view-btn.painpoints-active {
+            background: #ff4444 !important;
+            border-color: #ff4444 !important;
+            color: #fff !important;
+        }
+
+        .architecture-container {
+            padding: 30px;
+            min-width: 1200px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Main Flow View */
+        .main-flow { display: block; }
+        .detailed-view { display: none; }
+
+        .layer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .layer-label {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1a1a2e;
+            padding: 8px 15px;
+            border-radius: 0 20px 20px 0;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid #333;
+            border-left: none;
+        }
+
+        .flow-arrow {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+            color: #00d9ff;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .flow-arrow.large {
+            font-size: 2rem;
+            padding: 15px 0;
+        }
+
+        /* Component Boxes */
+        .component {
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            min-width: 140px;
+        }
+
+        .component:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .component h3 {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .component p {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .component .step {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 25px;
+            height: 25px;
+            background: #00d9ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Component Types */
+        .input {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1030 100%);
+            border: 2px solid #8b5cf6;
+        }
+
+        .api {
+            background: linear-gradient(135deg, #4a1942 0%, #2d1030 100%);
+            border: 2px solid #ff00ff;
+        }
+
+        .core {
+            background: linear-gradient(135deg, #0d3320 0%, #0a1a15 100%);
+            border: 2px solid #00ff88;
+        }
+
+        .agent {
+            background: linear-gradient(135deg, #0d2840 0%, #0a1525 100%);
+            border: 2px solid #00d9ff;
+        }
+
+        .knowledge {
+            background: linear-gradient(135deg, #3d2800 0%, #251a00 100%);
+            border: 2px solid #ffaa00;
+        }
+
+        .research {
+            background: linear-gradient(135deg, #3d0a0a 0%, #250505 100%);
+            border: 2px solid #ff4444;
+        }
+
+        .output {
+            background: linear-gradient(135deg, #1a3a1a 0%, #0a200a 100%);
+            border: 2px solid #00ff00;
+        }
+
+        /* Groups */
+        .group-box {
+            border: 2px dashed #333;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .group-box .group-title {
+            position: absolute;
+            top: -12px;
+            left: 30px;
+            background: #0a0a0f;
+            padding: 0 15px;
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .agents-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .agent-flow-arrow {
+            display: flex;
+            align-items: center;
+            color: #00d9ff;
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+
+        /* Horizontal Split */
+        .split-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .split-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Detail Panel */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-overlay.open { display: flex; }
+
+        .detail-card {
+            background: #1a1a2e;
+            border: 2px solid #00d9ff;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .detail-card h2 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-card .close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .detail-card .close:hover { opacity: 1; }
+
+        .detail-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .detail-section h4 {
+            color: #00ff88;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-section p, .detail-section li {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .detail-section ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        .detail-section li::before {
+            content: ">";
+            color: #00d9ff;
+            margin-right: 8px;
+        }
+
+        .file-badge {
+            display: inline-block;
+            background: rgba(0,255,136,0.1);
+            color: #00ff88;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        .api-badge {
+            display: inline-block;
+            background: rgba(255,0,255,0.2);
+            color: #ff00ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+
+        /* Summary Section */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+
+        .summary-card .label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Simple flow explanation */
+        .flow-explanation {
+            background: rgba(0,217,255,0.05);
+            border: 1px solid rgba(0,217,255,0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .flow-explanation h3 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .flow-step .num {
+            width: 30px;
+            height: 30px;
+            background: #00d9ff;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .flow-step .text {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        .flow-step .text strong {
+            color: #fff;
+        }
+
+        /* Pain Points Styles */
+        .pain-point-card {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid #333;
+            border-left: 4px solid #ff4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .pain-point-card:hover {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: #ff4444;
+        }
+
+        .pain-point-card.severity-critical {
+            border-left-color: #ff0000;
+            background: rgba(255, 0, 0, 0.08);
+        }
+
+        .pain-point-card.severity-high {
+            border-left-color: #ff6600;
+            background: rgba(255, 102, 0, 0.05);
+        }
+
+        .pain-point-card.severity-medium {
+            border-left-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.05);
+        }
+
+        .pain-point-card.severity-low {
+            border-left-color: #00aa00;
+            background: rgba(0, 170, 0, 0.05);
+        }
+
+        .pain-point-card.severity-fixed {
+            border-left-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .pain-point-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .pain-point-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .severity-badge.critical {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .severity-badge.high {
+            background: #ff6600;
+            color: #fff;
+        }
+
+        .severity-badge.medium {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .severity-badge.low {
+            background: #00aa00;
+            color: #fff;
+        }
+
+        .severity-badge.fixed {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .pain-point-description {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .pain-point-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+        }
+
+        .pain-point-file {
+            color: #00ff88;
+            font-family: monospace;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .pain-point-category {
+            color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .pain-point-workaround {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .pain-point-workaround strong {
+            color: #ffaa00;
+        }
+
+        .pain-points-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .pain-summary-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
+        }
+
+        .pain-summary-card .count {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .pain-summary-card .label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .pain-category-section {
+            margin-bottom: 30px;
+        }
+
+        .pain-category-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pain-category-icon {
+            font-size: 1.4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Jarvis-Ableton System Architecture</h1>
+        <p>Voice-controlled AI music production assistant</p>
+    </div>
+
+    <div class="view-toggle">
+        <button class="view-btn active" onclick="showView('simple')">Simple Flow</button>
+        <button class="view-btn" onclick="showView('detailed')">Detailed View</button>
+        <button class="view-btn" onclick="showView('agents')">Agent Pipeline</button>
+        <button class="view-btn" onclick="showView('apis')">API Connections</button>
+        <button class="view-btn" onclick="showView('painpoints')" style="border-color: #ff4444; color: #ff4444;">Pain Points</button>
+    </div>
+
+    <div class="architecture-container">
+        <!-- Summary Stats -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="number">6</div>
+                <div class="label">AI Agents</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">62</div>
+                <div class="label">Voice Commands</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">4</div>
+                <div class="label">External APIs</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">8K+</div>
+                <div class="label">Lines of Code</div>
+            </div>
+        </div>
+
+        <!-- SIMPLE FLOW VIEW -->
+        <div id="simple-view" class="view-content">
+            <div class="flow-explanation">
+                <h3>How Jarvis Works (The Main Flow)</h3>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="num">1</div>
+                        <div class="text"><strong>You speak</strong> a command like "Add reverb to the vocal track"</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="num">2</div>
+                        <div class="text"><strong>Gemini 2.0</strong> understands your voice and picks the right function to call</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="num">3</div>
+                        <div class="text"><strong>Jarvis Engine</strong> receives the function call and routes it appropriately</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="num">4</div>
+                        <div class="text"><strong>AI Agents</strong> analyze the request and decide how to execute it</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="num">5</div>
+                        <div class="text"><strong>Ableton Controller</strong> sends OSC commands to Ableton Live</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="num">6</div>
+                        <div class="text"><strong>Ableton Live</strong> executes the command (adds reverb, adjusts EQ, etc.)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Flow -->
+            <div class="layer">
+                <div class="component input" onclick="showDetail('user')">
+                    <div class="step">1</div>
+                    <h3>Your Voice</h3>
+                    <p>16kHz audio input</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow large">|</div>
+
+            <div class="layer">
+                <div class="component api" onclick="showDetail('gemini')">
+                    <div class="step">2</div>
+                    <h3>Gemini 2.0 Flash</h3>
+                    <p>Voice understanding + Function calling</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow large">|</div>
+
+            <div class="layer">
+                <div class="component core" onclick="showDetail('engine')">
+                    <div class="step">3</div>
+                    <h3>Jarvis Engine</h3>
+                    <p>Main orchestrator (2500 lines)</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow large">|</div>
+
+            <div class="group-box">
+                <div class="group-title">AI Agent Pipeline</div>
+                <div class="agents-row">
+                    <div class="component agent" onclick="showDetail('router')">
+                        <div class="step">4a</div>
+                        <h3>Router</h3>
+                        <p>Classify intent</p>
+                    </div>
+                    <div class="agent-flow-arrow">-></div>
+                    <div class="component agent" onclick="showDetail('audio-eng')">
+                        <h3>Audio Engineer</h3>
+                        <p>Production advice</p>
+                    </div>
+                    <div class="agent-flow-arrow">-></div>
+                    <div class="component agent" onclick="showDetail('planner')">
+                        <h3>Planner</h3>
+                        <p>Create workflow</p>
+                    </div>
+                    <div class="agent-flow-arrow">-></div>
+                    <div class="component agent" onclick="showDetail('executor')">
+                        <div class="step">4b</div>
+                        <h3>Executor</h3>
+                        <p>Run commands</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-arrow large">|</div>
+
+            <div class="layer">
+                <div class="component core" onclick="showDetail('controller')">
+                    <div class="step">5</div>
+                    <h3>Ableton Controller</h3>
+                    <p>OSC commands via UDP</p>
+                </div>
+                <div class="component core" onclick="showDetail('process-mgr')" style="border-color: #00cc66;">
+                    <h3>Process Manager</h3>
+                    <p>Open / Close / Crash Recovery</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow large">|</div>
+
+            <div class="layer">
+                <div class="component output" onclick="showDetail('ableton')">
+                    <div class="step">6</div>
+                    <h3>Ableton Live</h3>
+                    <p>Your DAW</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAILED VIEW -->
+        <div id="detailed-view" class="view-content" style="display:none;">
+            <div class="split-row">
+                <!-- Left: Main Pipeline -->
+                <div class="split-section">
+                    <div class="group-box">
+                        <div class="group-title">Main Pipeline</div>
+
+                        <div class="layer">
+                            <div class="component input" onclick="showDetail('user')">
+                                <h3>Voice Input</h3>
+                                <p>Microphone @ 16kHz</p>
+                            </div>
+                            <div class="component api" onclick="showDetail('gemini')">
+                                <h3>Gemini 2.0</h3>
+                                <p>Speech to intent</p>
+                            </div>
+                        </div>
+
+                        <div class="flow-arrow">|</div>
+
+                        <div class="layer">
+                            <div class="component core" onclick="showDetail('engine')">
+                                <h3>Jarvis Engine</h3>
+                                <p>Central hub</p>
+                            </div>
+                        </div>
+
+                        <div class="flow-arrow">|</div>
+
+                        <div class="layer">
+                            <div class="component core" onclick="showDetail('orchestrator')">
+                                <h3>Agent Orchestrator</h3>
+                                <p>Coordinates agents</p>
+                            </div>
+                        </div>
+
+                        <div class="flow-arrow">|</div>
+
+                        <div class="agents-row" style="flex-direction: column; gap: 10px;">
+                            <div class="component agent" onclick="showDetail('router')" style="width: 100%;">
+                                <h3>Router Agent</h3>
+                                <p>Classifies: Simple command? Complex workflow? Research needed?</p>
+                            </div>
+                            <div class="flow-arrow">|</div>
+                            <div style="display: flex; gap: 10px;">
+                                <div class="component agent" onclick="showDetail('audio-eng')">
+                                    <h3>Audio Engineer</h3>
+                                    <p>Mixing knowledge</p>
+                                </div>
+                                <div class="component agent" onclick="showDetail('researcher')">
+                                    <h3>Researcher</h3>
+                                    <p>Web/YouTube search</p>
+                                </div>
+                            </div>
+                            <div class="flow-arrow">|</div>
+                            <div class="component agent" onclick="showDetail('planner')" style="width: 100%;">
+                                <h3>Planner Agent</h3>
+                                <p>Breaks request into steps</p>
+                            </div>
+                            <div class="flow-arrow">|</div>
+                            <div class="component agent" onclick="showDetail('impl')" style="width: 100%;">
+                                <h3>Implementation Agent</h3>
+                                <p>Converts to OSC commands</p>
+                            </div>
+                            <div class="flow-arrow">|</div>
+                            <div class="component agent" onclick="showDetail('executor')" style="width: 100%;">
+                                <h3>Executor Agent</h3>
+                                <p>Runs commands with undo support</p>
+                            </div>
+                        </div>
+
+                        <div class="flow-arrow">|</div>
+
+                        <div class="layer">
+                            <div class="component core" onclick="showDetail('controller')">
+                                <h3>Ableton Controller</h3>
+                                <p>OSC client</p>
+                            </div>
+                            <div class="component api" onclick="showDetail('osc')">
+                                <h3>OSC Protocol</h3>
+                                <p>Port 11000/11001</p>
+                            </div>
+                            <div class="component core" onclick="showDetail('process-mgr')" style="border-color: #00cc66;">
+                                <h3>Process Manager</h3>
+                                <p>Open/Close/Recovery</p>
+                            </div>
+                        </div>
+
+                        <div class="flow-arrow">|</div>
+
+                        <div class="layer">
+                            <div class="component output" onclick="showDetail('ableton')">
+                                <h3>Ableton Live</h3>
+                                <p>via AbletonOSC bridge</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Support Systems -->
+                <div class="split-section">
+                    <div class="group-box">
+                        <div class="group-title">Knowledge Systems</div>
+                        <div class="agents-row" style="flex-direction: column; gap: 10px;">
+                            <div class="component knowledge" onclick="showDetail('plugin-kb')">
+                                <h3>Plugin Chain KB</h3>
+                                <p>Cached artist chains (Drake, Kanye, etc.)</p>
+                            </div>
+                            <div class="component knowledge" onclick="showDetail('device-kb')">
+                                <h3>Device Knowledge</h3>
+                                <p>15+ Ableton devices</p>
+                            </div>
+                            <div class="component knowledge" onclick="showDetail('device-intel')">
+                                <h3>Device Intelligence</h3>
+                                <p>40+ audio intents</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group-box" style="margin-top: 20px;">
+                        <div class="group-title">Research Systems</div>
+                        <div class="agents-row" style="flex-direction: column; gap: 10px;">
+                            <div class="component research" onclick="showDetail('research-coord')">
+                                <h3>Research Coordinator</h3>
+                                <p>Aggregates sources</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <div class="component research" onclick="showDetail('web-research')">
+                                    <h3>Web Researcher</h3>
+                                    <p>Serper API</p>
+                                </div>
+                                <div class="component research" onclick="showDetail('yt-research')">
+                                    <h3>YouTube</h3>
+                                    <p>Transcript extraction</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group-box" style="margin-top: 20px;">
+                        <div class="group-title">State & Learning</div>
+                        <div class="agents-row" style="flex-direction: column; gap: 10px;">
+                            <div class="component core" onclick="showDetail('session')">
+                                <h3>Session Manager</h3>
+                                <p>Track states, transport</p>
+                            </div>
+                            <div class="component core" onclick="showDetail('persistence')">
+                                <h3>Session Persistence</h3>
+                                <p>Cross-session learning</p>
+                            </div>
+                            <div class="component knowledge" onclick="showDetail('learning')">
+                                <h3>Learning System</h3>
+                                <p>Success tracking</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group-box" style="margin-top: 20px;">
+                        <div class="group-title">Process Control</div>
+                        <div class="agents-row" style="flex-direction: column; gap: 10px;">
+                            <div class="component core" onclick="showDetail('process-mgr')" style="border-color: #00cc66;">
+                                <h3>Process Manager</h3>
+                                <p>Open / Close / Restart / Crash Recovery</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENTS VIEW -->
+        <div id="agents-view" class="view-content" style="display:none;">
+            <div class="flow-explanation">
+                <h3>The 6 AI Agents - What Each One Does</h3>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div class="group-box" onclick="showDetail('router')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>1. Router Agent</h3>
+                        <p>First agent to receive your request</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Classify what type of request this is<br><br>
+                        <strong>Outputs:</strong>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>SIMPLE_COMMAND - Just do it (play, stop, mute)</li>
+                            <li>COMPLEX_WORKFLOW - Multi-step (create vocal chain)</li>
+                            <li>QUESTION - User asking something</li>
+                            <li>RESEARCH_NEEDED - Need to look up info</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('audio-eng')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>2. Audio Engineer Agent</h3>
+                        <p>The mixing expert</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Provide professional audio engineering knowledge<br><br>
+                        <strong>Knows about:</strong>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>Genre-specific presets (hip-hop, pop, rock)</li>
+                            <li>Mixing techniques (compression, EQ curves)</li>
+                            <li>Plugin recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('researcher')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>3. Research Agent</h3>
+                        <p>Finds info from the internet</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Search web/YouTube for production techniques<br><br>
+                        <strong>Sources:</strong>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>YouTube tutorials (transcript extraction)</li>
+                            <li>SoundOnSound, MusicRadar, iZotope</li>
+                            <li>Plugin documentation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('planner')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>4. Planner Agent</h3>
+                        <p>Breaks complex requests into steps</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Create a step-by-step workflow plan<br><br>
+                        <strong>Example:</strong> "Create Drake vocal chain"<br>
+                        1. Add Compressor to track<br>
+                        2. Set ratio to 4:1<br>
+                        3. Add EQ Eight<br>
+                        4. Boost 3kHz for presence...
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('impl')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>5. Implementation Agent</h3>
+                        <p>Converts plans to actual commands</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Generate specific OSC commands<br><br>
+                        <strong>Converts:</strong><br>
+                        "Add EQ Eight to track 1"<br>
+                        into<br>
+                        <code style="color: #00ff88;">/live/track/add_device [0, "EQ Eight"]</code>
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('executor')">
+                    <div class="component agent" style="width: 100%;">
+                        <h3>6. Executor Agent</h3>
+                        <p>Actually runs the commands</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Job:</strong> Execute commands against Ableton Live<br><br>
+                        <strong>Features:</strong>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>Undo/redo support</li>
+                            <li>Error recovery</li>
+                            <li>Result verification</li>
+                            <li>Retry logic for flaky operations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APIS VIEW -->
+        <div id="apis-view" class="view-content" style="display:none;">
+            <div class="flow-explanation">
+                <h3>External API Connections - What You Need to Set Up</h3>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div class="group-box" onclick="showDetail('gemini')">
+                    <div class="component api" style="width: 100%;">
+                        <h3>Google Gemini 2.0 Flash</h3>
+                        <p>REQUIRED - Voice understanding</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Purpose:</strong> Real-time speech-to-text and function calling<br><br>
+                        <strong>Env Variable:</strong> <code style="color: #ff00ff;">GOOGLE_API_KEY</code><br><br>
+                        <strong>Features Used:</strong>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>Audio streaming (16kHz in, 24kHz out)</li>
+                            <li>59 function declarations</li>
+                            <li>Real-time responses</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('serper')">
+                    <div class="component api" style="width: 100%;">
+                        <h3>Serper API (Google Search)</h3>
+                        <p>OPTIONAL - Web research</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Purpose:</strong> Search production tutorials<br><br>
+                        <strong>Env Variable:</strong> <code style="color: #ff00ff;">SERPER_API_KEY</code><br><br>
+                        <strong>Endpoint:</strong> https://google.serper.dev/search<br><br>
+                        <strong>Used For:</strong> Finding vocal chain tutorials, plugin settings
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('youtube')">
+                    <div class="component api" style="width: 100%;">
+                        <h3>YouTube Data API v3</h3>
+                        <p>OPTIONAL - Video research</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Purpose:</strong> Search YouTube for tutorials<br><br>
+                        <strong>Env Variable:</strong> <code style="color: #ff00ff;">YOUTUBE_API_KEY</code><br><br>
+                        <strong>Used For:</strong> Finding production tutorials, extracting transcripts for plugin settings
+                    </div>
+                </div>
+
+                <div class="group-box" onclick="showDetail('osc')">
+                    <div class="component api" style="width: 100%;">
+                        <h3>OSC Protocol (Local)</h3>
+                        <p>REQUIRED - Ableton connection</p>
+                    </div>
+                    <div style="padding: 15px; color: #aaa; font-size: 0.85rem;">
+                        <strong>Purpose:</strong> Control Ableton Live<br><br>
+                        <strong>Ports:</strong><br>
+                        - Send: <code style="color: #ff00ff;">localhost:11000</code><br>
+                        - Receive: <code style="color: #ff00ff;">localhost:11001</code><br><br>
+                        <strong>Requires:</strong> AbletonOSC MIDI Remote Script installed
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAIN POINTS VIEW -->
+        <div id="painpoints-view" class="view-content" style="display:none;">
+            <div class="flow-explanation" style="border-color: rgba(255, 68, 68, 0.3); background: rgba(255, 68, 68, 0.05);">
+                <h3 style="color: #ff4444;">Known Pain Points & Issues</h3>
+                <p style="color: #aaa; margin-top: 10px;">This documents the current limitations, bugs, and areas that need improvement in the Jarvis-Ableton system.</p>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="pain-points-summary">
+                <div class="pain-summary-card">
+                    <div class="count" style="color: #ff0000;">0</div>
+                    <div class="label">Critical</div>
+                </div>
+                <div class="pain-summary-card">
+                    <div class="count" style="color: #ff6600;">2</div>
+                    <div class="label">High</div>
+                </div>
+                <div class="pain-summary-card">
+                    <div class="count" style="color: #ffaa00;">4</div>
+                    <div class="label">Medium</div>
+                </div>
+                <div class="pain-summary-card">
+                    <div class="count" style="color: #00aa00;">1</div>
+                    <div class="label">Low</div>
+                </div>
+                <div class="pain-summary-card">
+                    <div class="count" style="color: #00ff88;">8</div>
+                    <div class="label">Fixed</div>
+                </div>
+            </div>
+
+            <!-- Active Issues -->
+            <div class="pain-category-section">
+                <div class="pain-category-title">
+                    <span class="pain-category-icon">!</span>
+                    Active Issues
+                </div>
+
+                <div class="pain-point-card severity-high">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Parameter Setting Reliability</div>
+                        <span class="severity-badge high">High</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Setting device parameters via OSC is flaky and requires extensive retry logic. The reliable_params.py file has multiple retry mechanisms with exponential backoff, indicating the underlying operation fails frequently.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/reliable_params.py</span>
+                        <span class="pain-point-category">OSC Communication</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Automatic retries with exponential backoff. May need to retry parameter changes if they don't take effect.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-high">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Plugin Name Matching</div>
+                        <span class="severity-badge high">High</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Plugin/device names must match EXACTLY what appears in Ableton's browser. "EQ Eight" works but "EQ8" or "eq eight" may fail. Third-party plugins are especially problematic with version numbers and special characters in names.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">JarvisDeviceLoader/__init__.py</span>
+                        <span class="pain-point-category">Plugin Loading</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Use exact plugin names. Run "What compressors do I have?" to see exact names. VST cache helps but needs to be refreshed after installing new plugins.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-medium">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">OSC Async Response Handling</div>
+                        <span class="severity-badge medium">Medium</span>
+                    </div>
+                    <div class="pain-point-description">
+                        OSC get/query operations are asynchronous - responses arrive on port 11001 separately from requests. This makes it difficult to reliably match responses to requests, especially under load.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">config/osc_paths.json:274</span>
+                        <span class="pain-point-category">OSC Communication</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> System focuses on setter functions. Getter functions use timeout-based waiting which can be slow or fail.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-medium">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Preset Loading Not Implemented</div>
+                        <span class="severity-badge medium">Medium</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Cannot load device presets via OSC. The functionality is marked as TODO in the controller. Users must manually select presets in Ableton after device is loaded.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/controller.py:1415</span>
+                        <span class="pain-point-category">Missing Feature</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> None. After loading a device, manually select the preset in Ableton.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-medium">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">External API Dependencies</div>
+                        <span class="severity-badge medium">Medium</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Research features depend on Serper API (web search) and YouTube Data API. These can fail due to rate limiting, network issues, or API quota exhaustion. Research results vary in quality.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">research/web_research.py</span>
+                        <span class="pain-point-category">External Dependencies</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Plugin chain KB caches successful research. Generic chains work without API calls.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-medium">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">UDP Datagram Size Limits</div>
+                        <span class="severity-badge medium">Medium</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Large responses (like full plugin lists) can exceed UDP datagram size limits, causing WinError 10040 on Windows. Responses must be paginated.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">JarvisDeviceLoader/__init__.py:453</span>
+                        <span class="pain-point-category">OSC Communication</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Plugin list responses are paginated. May still fail with very large plugin libraries.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-medium">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Gemini Connection Loss Recovery</div>
+                        <span class="severity-badge medium">Medium</span>
+                    </div>
+                    <div class="pain-point-description">
+                        If connection to Gemini is lost, recovery is not always graceful. Heartbeat and stall detector help but can't handle all scenarios. Ableton process recovery is now handled by the Process Manager.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">jarvis_engine.py</span>
+                        <span class="pain-point-category">Reliability</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Restart Jarvis if Gemini connection issues persist. Ableton crashes are auto-recovered via ableton_controls/process_manager.py.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-low">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Port 11003 Conflicts</div>
+                        <span class="severity-badge low">Low</span>
+                    </div>
+                    <div class="pain-point-description">
+                        The response port 11003 for JarvisDeviceLoader can be busy, requiring fallback to fire-and-forget mode without confirmation.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">jarvis_engine.py:1484</span>
+                        <span class="pain-point-category">Port Management</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Current mitigation:</strong> Automatic fallback to fire-and-forget. Usually works, but no confirmation of success.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recently Fixed -->
+            <div class="pain-category-section">
+                <div class="pain-category-title">
+                    <span class="pain-category-icon" style="color: #00ff88;">+</span>
+                    Recently Fixed
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Status "IDLE" Spam</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        System was outputting [STATUS: IDLE] after every single action, causing verbose and distracting output.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">jarvis_engine.py</span>
+                        <span class="pain-point-category">UX</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Removed aggressive idle status instructions from system prompt.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Armed Track Detection Missing</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Could not detect which tracks were armed for recording. No way to ask "which track is armed?"
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/controller.py, jarvis_tools.py</span>
+                        <span class="pain-point-category">Missing Feature</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Added get_track_arm, get_track_mute, get_track_solo, get_armed_tracks tools.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Fuzzy Track Reference Failure</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Saying "the vocal track" or "my lead" didn't work - had to use exact track numbers.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">jarvis_engine.py, jarvis_tools.py</span>
+                        <span class="pain-point-category">Voice Understanding</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Added find_track_by_name with fuzzy matching (exact, contains, word-level scoring).
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">_wait_for_response Bug</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        get_track_list() crashed with "'AbletonController' object has no attribute '_wait_for_response'" causing infinite loops.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/controller.py</span>
+                        <span class="pain-point-category">Bug</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Changed to correct method name _send_and_wait().
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Silent Plugin Loading Failures</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        When plugin loading failed, there were NO error messages - complete silence made debugging impossible.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">JarvisDeviceLoader/__init__.py</span>
+                        <span class="pain-point-category">Logging</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Added verbose logging at every step of device loading.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">No Programmatic Ableton Open/Close</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Could not open, close, or restart Ableton from code. Process management logic was buried in tests/ and not importable as a first-class module.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/process_manager.py</span>
+                        <span class="pain-point-category">Process Control</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Moved process manager to ableton_controls/process_manager.py. Added close_ableton(), open_ableton(), restart_ableton() convenience methods to AbletonController. Backward-compat stub in tests/.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Recovery Dialog Always Clicks Yes</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        handle_recovery_dialog() always pressed Enter (Yes). No way to decline recovery and start fresh.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">ableton_controls/process_manager.py</span>
+                        <span class="pain-point-category">Process Control</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Added reopen_project parameter (True=Yes, False=No via Tab+Enter with Alt+N fallback). Configurable default via recovery_action ("yes", "no", "ask") on AbletonProcessManager.
+                    </div>
+                </div>
+
+                <div class="pain-point-card severity-fixed">
+                    <div class="pain-point-header">
+                        <div class="pain-point-title">Mandatory Track Verification Loops</div>
+                        <span class="severity-badge fixed">Fixed</span>
+                    </div>
+                    <div class="pain-point-description">
+                        Protocol required track list to succeed before ANY operation, causing Jarvis to get stuck in loops when get_track_list failed.
+                    </div>
+                    <div class="pain-point-meta">
+                        <span class="pain-point-file">CLAUDE.md, jarvis_engine.py</span>
+                        <span class="pain-point-category">Protocol</span>
+                    </div>
+                    <div class="pain-point-workaround">
+                        <strong>Fix:</strong> Changed track verification from MANDATORY to RECOMMENDED. Can proceed with explicit track numbers.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #8b5cf6, #6b21a8);"></div>
+                <span>Input</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ff00ff, #aa00aa);"></div>
+                <span>External API</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #00ff88, #00aa55);"></div>
+                <span>Core System</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #00d9ff, #0066ff);"></div>
+                <span>AI Agent</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffaa00, #ff6600);"></div>
+                <span>Knowledge Base</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ff4444, #cc0000);"></div>
+                <span>Research System</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Overlay -->
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+        <div class="detail-card" onclick="event.stopPropagation()">
+            <h2>
+                <span id="detailTitle">Component</span>
+                <span class="close" onclick="closeDetail()">&times;</span>
+            </h2>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const details = {
+            'user': {
+                title: 'Voice Input',
+                file: null,
+                sections: [
+                    { title: 'What It Does', content: 'Captures your voice commands via microphone and streams them to Gemini for understanding.' },
+                    { title: 'Technical Details', list: ['16kHz audio sample rate', 'Real-time streaming via PyAudio', 'Echo cancellation when Jarvis is speaking'] }
+                ]
+            },
+            'gemini': {
+                title: 'Google Gemini 2.0 Flash',
+                file: 'jarvis_engine.py',
+                api: 'GOOGLE_API_KEY',
+                sections: [
+                    { title: 'What It Does', content: 'Understands your voice commands and decides which function to call. This is the "brain" that interprets natural language.' },
+                    { title: 'Functions Available', content: '59 functions including: play, stop, mute_track, add_plugin, create_plugin_chain, set_device_parameter, etc.' },
+                    { title: 'Technical Details', list: ['Model: gemini-2.0-flash-exp', 'API Version: v1alpha', 'Audio: 16kHz input, 24kHz output', 'Real-time bidirectional streaming'] }
+                ]
+            },
+            'engine': {
+                title: 'Jarvis Engine',
+                file: 'jarvis_engine.py',
+                sections: [
+                    { title: 'What It Does', content: 'The main orchestrator that ties everything together. Receives function calls from Gemini and routes them to the appropriate handler.' },
+                    { title: 'Key Responsibilities', list: ['Audio streaming with Gemini', 'Function dispatch to agents/controllers', 'Session state management', 'Error handling and recovery'] },
+                    { title: 'Size', content: '2,516 lines of Python code' }
+                ]
+            },
+            'orchestrator': {
+                title: 'Agent Orchestrator',
+                file: 'agent_system.py',
+                sections: [
+                    { title: 'What It Does', content: 'Manages all 6 AI agents and routes messages between them. Think of it as the "manager" of the agent team.' },
+                    { title: 'Key Methods', list: ['register_agent() - Add an agent', 'route_message() - Send messages between agents', 'execute_workflow() - Run full pipeline'] }
+                ]
+            },
+            'router': {
+                title: 'Router Agent',
+                file: 'agents/router_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'First agent in the pipeline. Classifies what type of request you made and routes it appropriately.' },
+                    { title: 'Intent Types', list: ['SIMPLE_COMMAND - Quick actions (play, stop, mute)', 'COMPLEX_WORKFLOW - Multi-step tasks', 'QUESTION - User asking for information', 'RESEARCH_NEEDED - Need to look something up'] }
+                ]
+            },
+            'audio-eng': {
+                title: 'Audio Engineer Agent',
+                file: 'agents/audio_engineer_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'Your virtual mixing engineer. Knows production techniques, genre-specific settings, and can recommend plugins.' },
+                    { title: 'Knowledge Areas', list: ['Genre presets (hip-hop, pop, rock, EDM)', 'Mixing techniques (compression ratios, EQ curves)', 'Plugin recommendations for specific sounds', 'Signal chain ordering'] }
+                ]
+            },
+            'researcher': {
+                title: 'Research Agent',
+                file: 'agents/research_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'Searches the web and YouTube when you ask for something specific like "Drake vocal chain" that requires looking up information.' },
+                    { title: 'Sources', list: ['YouTube tutorials (with transcript extraction)', 'SoundOnSound, MusicRadar, iZotope', 'Plugin manufacturer documentation'] }
+                ]
+            },
+            'planner': {
+                title: 'Planner Agent',
+                file: 'agents/planner_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'Takes a high-level request and breaks it down into specific steps that can be executed.' },
+                    { title: 'Example', content: '"Create Drake vocal chain" becomes:\n1. Add Compressor\n2. Set ratio to 4:1\n3. Add EQ Eight\n4. Boost 3kHz...' }
+                ]
+            },
+            'impl': {
+                title: 'Implementation Agent',
+                file: 'agents/implementation_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'Converts the workflow plan into actual OSC commands that Ableton can understand.' },
+                    { title: 'Example', content: '"Add EQ Eight to track 1"\n\nBecomes:\n/live/track/add_device [0, "EQ Eight"]' }
+                ]
+            },
+            'executor': {
+                title: 'Executor Agent',
+                file: 'agents/executor_agent.py',
+                sections: [
+                    { title: 'What It Does', content: 'Actually runs the commands against Ableton Live. The final step before your DAW changes.' },
+                    { title: 'Features', list: ['Undo/redo support', 'Error recovery', 'Result verification', 'Retry logic for flaky operations'] }
+                ]
+            },
+            'controller': {
+                title: 'Ableton Controller',
+                file: 'ableton_controls/controller.py',
+                sections: [
+                    { title: 'What It Does', content: 'The OSC client that sends commands to Ableton Live, plus convenience methods for process lifecycle (open, close, restart).' },
+                    { title: 'Key Methods', list: ['mute_track(), solo_track(), arm_track()', 'set_device_parameter()', 'get_track_list()', 'load_device()', 'open_ableton(project_path)', 'close_ableton(force)', 'restart_ableton(reopen_project, force_kill)'] },
+                    { title: 'Connection', content: 'UDP localhost:11000 (send) / localhost:11001 (receive)' }
+                ]
+            },
+            'process-mgr': {
+                title: 'Ableton Process Manager',
+                file: 'ableton_controls/process_manager.py',
+                sections: [
+                    { title: 'What It Does', content: 'Manages the Ableton Live process: launch, close (graceful or force-kill), restart, crash detection, and recovery dialog handling.' },
+                    { title: 'Key Methods', list: ['launch_ableton(project_path) - Start Ableton, optionally with a project', 'close_ableton(force) - Graceful terminate then optional force kill', 'restart_ableton(reopen_project, force_kill) - Close + relaunch', 'handle_recovery_dialog(reopen_project) - Yes/No on crash dialog', 'detect_crash() - Check if process disappeared', 'is_ableton_running() - Process check'] },
+                    { title: 'Recovery Dialog', content: 'Configurable via recovery_action ("yes", "no", "ask"). reopen_project=True presses Enter (Yes), reopen_project=False presses Tab+Enter (No) with Alt+N fallback.' },
+                    { title: 'Note', content: 'Previously lived in tests/ableton_process_manager.py. Now a first-class module in ableton_controls/. A backward-compat stub re-exports from the old location.' }
+                ]
+            },
+            'osc': {
+                title: 'OSC Protocol',
+                file: 'ableton_controls/controller.py',
+                sections: [
+                    { title: 'What It Does', content: 'Open Sound Control protocol used to communicate with Ableton Live.' },
+                    { title: 'Connection Details', list: ['Send port: 11000', 'Receive port: 11001', 'Protocol: UDP', 'Requires: AbletonOSC MIDI Remote Script'] }
+                ]
+            },
+            'ableton': {
+                title: 'Ableton Live',
+                file: null,
+                sections: [
+                    { title: 'What It Does', content: 'Your Digital Audio Workstation where the actual music production happens.' },
+                    { title: 'Requirements', list: ['Ableton Live 11 (or compatible version)', 'AbletonOSC MIDI Remote Script installed', 'JarvisDeviceLoader script for plugin loading'] }
+                ]
+            },
+            'plugin-kb': {
+                title: 'Plugin Chain Knowledge Base',
+                file: 'knowledge/plugin_chain_kb.py',
+                sections: [
+                    { title: 'What It Does', content: 'Caches researched plugin chains so Jarvis doesn\'t have to look them up every time.' },
+                    { title: 'Storage', content: 'knowledge/plugin_chains.json' },
+                    { title: 'Example', content: 'Stores chains like "Drake vocal chain" with all plugin settings for quick recall.' }
+                ]
+            },
+            'device-kb': {
+                title: 'Device Knowledge Base',
+                file: 'knowledge/device_kb.py',
+                sections: [
+                    { title: 'What It Does', content: 'Contains semantic understanding of Ableton devices - what each parameter does and common settings.' },
+                    { title: 'Coverage', content: '15+ Ableton stock devices including EQ Eight, Compressor, Reverb, Saturator, etc.' }
+                ]
+            },
+            'device-intel': {
+                title: 'Device Intelligence',
+                file: 'discovery/device_intelligence.py',
+                sections: [
+                    { title: 'What It Does', content: 'Maps audio engineering intents to specific device settings.' },
+                    { title: 'Example Intents', list: ['"warmth" -> Saturator with subtle settings', '"punch" -> Compressor with fast attack', '"air" -> EQ boost at 12kHz', '"de-ess" -> Compressor with sidechain filter'] },
+                    { title: 'Coverage', content: '40+ audio intents' }
+                ]
+            },
+            'research-coord': {
+                title: 'Research Coordinator',
+                file: 'research/research_coordinator.py',
+                sections: [
+                    { title: 'What It Does', content: 'Orchestrates research from multiple sources (YouTube + Web) and aggregates the results.' },
+                    { title: 'Output', content: 'ChainSpec - a complete specification for a plugin chain with confidence scores' }
+                ]
+            },
+            'web-research': {
+                title: 'Web Researcher',
+                file: 'research/web_research.py',
+                sections: [
+                    { title: 'What It Does', content: 'Searches and scrapes production tutorial websites.' },
+                    { title: 'Sites', list: ['SoundOnSound', 'MusicRadar', 'iZotope Learn', 'Waves tutorials'] },
+                    { title: 'API', content: 'Serper API (SERPER_API_KEY)' }
+                ]
+            },
+            'yt-research': {
+                title: 'YouTube Researcher',
+                file: 'research/youtube_research.py',
+                sections: [
+                    { title: 'What It Does', content: 'Searches YouTube for production tutorials and extracts settings from transcripts.' },
+                    { title: 'Features', list: ['Video search', 'Transcript extraction', 'LLM-based settings parsing'] },
+                    { title: 'API', content: 'YouTube Data API v3 (YOUTUBE_API_KEY)' }
+                ]
+            },
+            'session': {
+                title: 'Session Manager',
+                file: 'context/session_manager.py',
+                sections: [
+                    { title: 'What It Does', content: 'Tracks the current state of your Ableton session.' },
+                    { title: 'Tracks', list: ['Transport state (playing, recording, tempo)', 'Track states (mute, solo, arm, volume)', 'Project metadata', 'Action history'] }
+                ]
+            },
+            'persistence': {
+                title: 'Session Persistence',
+                file: 'context/session_persistence.py',
+                sections: [
+                    { title: 'What It Does', content: 'Saves learned information across sessions so Jarvis remembers your preferences.' },
+                    { title: 'Storage', content: '~/.jarvis_ableton/' },
+                    { title: 'Saves', list: ['Learned plugin chains', 'User preferences', 'Undo history'] }
+                ]
+            },
+            'learning': {
+                title: 'Learning System',
+                file: 'discovery/learning_system.py',
+                sections: [
+                    { title: 'What It Does', content: 'Tracks what works and what doesn\'t to improve recommendations over time.' },
+                    { title: 'Features', list: ['Success/failure tracking', 'User preference learning', 'Technique usage statistics'] }
+                ]
+            }
+        };
+
+        function showView(view) {
+            // Update buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('painpoints-active');
+            });
+            event.target.classList.add('active');
+
+            // Special styling for pain points tab
+            if (view === 'painpoints') {
+                event.target.classList.add('painpoints-active');
+            }
+
+            // Hide all views
+            document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
+
+            // Show selected view
+            document.getElementById(view + '-view').style.display = 'block';
+        }
+
+        function showDetail(id) {
+            const detail = details[id];
+            if (!detail) return;
+
+            document.getElementById('detailTitle').textContent = detail.title;
+
+            let html = '';
+
+            if (detail.file) {
+                html += `<p><span class="file-badge">${detail.file}</span></p>`;
+            }
+
+            if (detail.api) {
+                html += `<p style="margin-top: 10px;"><span class="api-badge">Requires: ${detail.api}</span></p>`;
+            }
+
+            detail.sections.forEach(section => {
+                html += `<div class="detail-section"><h4>${section.title}</h4>`;
+                if (section.content) {
+                    html += `<p>${section.content.replace(/\n/g, '<br>')}</p>`;
+                }
+                if (section.list) {
+                    html += '<ul>';
+                    section.list.forEach(item => {
+                        html += `<li>${item}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                html += '</div>';
+            });
+
+            document.getElementById('detailContent').innerHTML = html;
+            document.getElementById('detailOverlay').classList.add('open');
+        }
+
+        function closeDetail(event) {
+            if (!event || event.target === document.getElementById('detailOverlay')) {
+                document.getElementById('detailOverlay').classList.remove('open');
+            }
+        }
+
+        // Keyboard shortcut to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDetail();
+        });
+    </script>
+</body>
+</html>

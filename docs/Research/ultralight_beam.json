@@ -1,0 +1,119 @@
+{
+  "song": {
+    "title": "Ultralight Beam",
+    "artist": "Kanye West",
+    "year": 2016,
+    "genre": "gospel hip-hop"
+  },
+  "global_tags": ["gospel", "lush", "warm", "choir", "ethereal", "spiritual"],
+  "sections": {
+    "verse": {
+      "intent": "Warm, intimate lead vocal sitting slightly behind the choir",
+      "chain": [
+        {
+          "plugin": "EQ Eight",
+          "stage": "cleanup",
+          "key_params": {
+            "high_pass_freq": 85,
+            "low_mid_cut_freq": 300,
+            "low_mid_cut_gain": -2.5
+          },
+          "param_why": {
+            "high_pass_freq": "85 Hz removes rumble without thinning the chest resonance",
+            "low_mid_cut_freq": "300 Hz is where vocal mud accumulates in a dense gospel mix",
+            "low_mid_cut_gain": "-2.5 dB cleans low-mid buildup while staying natural"
+          },
+          "why": "Clean low-end before compression so dynamics react to vocal content"
+        },
+        {
+          "plugin": "Compressor",
+          "stage": "dynamics",
+          "key_params": {
+            "threshold": -18,
+            "ratio": 4,
+            "attack": 10,
+            "release": 80,
+            "makeup_gain": 3
+          },
+          "param_why": {
+            "threshold": "-18 dB catches louder phrases while preserving softer lines",
+            "ratio": "4:1 controls peaks without obvious pumping",
+            "attack": "10 ms keeps consonants clear",
+            "release": "80 ms recovers before the next phrase",
+            "makeup_gain": "Compensates average gain reduction"
+          },
+          "why": "Even vocal dynamics for stable placement in a choir-heavy mix"
+        }
+      ]
+    },
+    "chorus": {
+      "intent": "Larger and brighter lead that rides over choir and organ",
+      "chain": [
+        {
+          "plugin": "Compressor",
+          "stage": "dynamics",
+          "key_params": {
+            "threshold": -20,
+            "ratio": 3,
+            "attack": 8,
+            "release": 70
+          },
+          "param_why": {
+            "threshold": "Extra control for louder chorus phrases",
+            "ratio": "3:1 keeps movement while adding control",
+            "attack": "Fast enough to stabilize words",
+            "release": "Returns quickly for musical phrasing"
+          },
+          "why": "Keep chorus vocal steady and up front"
+        }
+      ]
+    },
+    "background_vocals": {
+      "intent": "Soft widened layers that support the lead without masking",
+      "chain": [
+        {
+          "plugin": "Reverb",
+          "stage": "space",
+          "key_params": {
+            "decay_time": 2.4,
+            "predelay": 22,
+            "dry_wet": 35
+          },
+          "param_why": {
+            "decay_time": "Longer tail blends backing layers",
+            "predelay": "Small pre-delay keeps articulation",
+            "dry_wet": "Higher wet blend pushes backgrounds back"
+          },
+          "why": "Place background vocals behind the lead in shared ambience"
+        }
+      ]
+    },
+    "adlibs": {
+      "intent": "Airy accents with movement and extra space",
+      "chain": [
+        {
+          "plugin": "Delay",
+          "stage": "space",
+          "key_params": {
+            "sync": 1,
+            "time_left": 0.375,
+            "time_right": 0.5,
+            "feedback": 28,
+            "dry_wet": 24
+          },
+          "param_why": {
+            "sync": "Keeps delay musical to tempo",
+            "time_left": "Dotted/offset feel adds movement",
+            "time_right": "Stereo contrast widens adlibs",
+            "feedback": "Enough repeats without clutter",
+            "dry_wet": "Subtle blend keeps adlibs supportive"
+          },
+          "why": "Create rhythmic space around adlib moments"
+        }
+      ]
+    }
+  },
+  "confidence": 0.8,
+  "notes": "Seed librarian entry for implementation validation",
+  "sources": ["manual_seed"]
+}

@@ -1,0 +1,1 @@
+"Always use the google-genai 2.0 SDK for Gemini interactions. All Ableton commands must go through the OSC bridge on port 11000. Track 1 in Ableton is always index 0 in the code."

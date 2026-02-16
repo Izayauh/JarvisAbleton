@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./*.als)",
+      "Read(./*.alp)",
+      "Read(./*.adv)",
+      "Read(./*.adg)",
+      "Read(./Backup)",
+      "Read(./Ableton Project Info)",
+      "Read(./*.asd)",
+      "Read(./*.decoded)",
+      "Read(./*.tmp)",
+      "Read(./Samples)",
+      "Read(./Processed)",
+      "Read(./__pycache__)",
+      "Read(./*.py[cod])",
+      "Read(./*$py.class)",
+      "Read(./venv)",
+      "Read(./.venv)",
+      "Read(./env)",
+      "Read(./.env)",
+      "Read(./dist)",
+      "Read(./build)",
+      "Read(./node_modules)",
+      "Read(./.git)",
+      "Read(./.DS_Store)",
+      "Read(./*.log)",
+      "Read(./data)",
+      "Read(./outputs)",
+      "Read(./temp_crash_report)",
+      "Read(./debug.log)",
+      "Read(./test_output.txt)",
+      "Read(./.cursor)",
+      "Read(./.claude)"
+    ]
+  }
+}

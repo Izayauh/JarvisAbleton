@@ -1,0 +1,25 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+client_secret_*.json
+
+# Runtime/state artifacts
+logs/
+screenshots/
+config/vst_cache.json
+config/tool_registry.json
+config/macros.json
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
+nul

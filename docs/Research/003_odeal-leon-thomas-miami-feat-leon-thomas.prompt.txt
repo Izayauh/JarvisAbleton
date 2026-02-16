@@ -1,0 +1,20 @@
+You are an elite vocal production analyst helping build an offline vocal-chain database for an AI DAW assistant.
+Song to analyze - (Miami (feat. Leon Thomas) - Odeal, Leon Thomas)
+Return EXACTLY one valid JSON object (no markdown, no commentary) that follows this schema intent:
+{"song":{"title":string,"artist":string,"year":integer|null,"genre":string|null},"global_tags":string[],"sections":{"verse":{"intent":string,"chain":Device[]},"chorus":{"intent":string,"chain":Device[]},"background_vocals":{"intent":string,"chain":Device[]},"adlibs":{"intent":string,"chain":Device[]}},"confidence":number(0..1),"notes":string,"sources":string[]}
+Where each Device is:
+{"plugin":string,"stage":"cleanup"|"tone"|"dynamics"|"space"|"creative"|"utility","key_params":{...},"param_why":{"param_name":"short reason"},"why":string}
+Song to analyze:
+- title: "Miami (feat. Leon Thomas)"
+- artist: "Odeal, Leon Thomas"
+- spotify_url: "https://open.spotify.com/track/2egIlhalVEVQhvt9W11u82"
+- optional context: "JarvisAbleton training export"
+Hard requirements:
+1) Include all 4 sections: verse, chorus, background_vocals, adlibs.
+2) For each section, provide an ORDERED chain (5–10 devices typical).
+3) key_params must be practical and machine-usable.
+4) Prefer common plugins and/or stock-equivalent naming.
+5) Do NOT fabricate false precision.
+6) Add global_tags for retrieval.
+7) Ensure param_why covers key_params entries.
+Return JSON only.
