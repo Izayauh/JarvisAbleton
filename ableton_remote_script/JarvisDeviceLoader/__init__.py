@@ -238,42 +238,62 @@ class JarvisDeviceLoader(ControlSurface):
     # ==================== DEVICE LOADING ====================
     
     def _handle_load_device(self, args, addr):
-        """Handle device loading request"""
+        """Handle device loading request.
+
+        IMPORTANT: Must run on Ableton's main thread via schedule_message.
+        Running browser.load_item() from the OSC listener thread causes
+        'Audio queue timeout' crashes (corrupts internal state).
+        """
         if len(args) < 2:
-            self._send_response(addr, "/jarvis/device/load/response", 
+            self._send_response(addr, "/jarvis/device/load/response",
                               [0, "error", "Missing arguments: track_index, device_name"])
             return
-        
+
         track_index = int(args[0])
         device_name = str(args[1])
         position = int(args[2]) if len(args) > 2 else -1
-        
-        try:
-            result = self._load_device_on_track(track_index, device_name, position)
-            self._send_response(addr, "/jarvis/device/load/response", result)
-        except Exception as e:
-            self.log_message("Load device error: {}".format(str(e)))
-            self._send_response(addr, "/jarvis/device/load/response",
-                              [0, "error", str(e)])
+
+        def do_load_on_main_thread():
+            try:
+                result = self._load_device_on_track(track_index, device_name, position)
+                self._send_response(addr, "/jarvis/device/load/response", result)
+            except Exception as e:
+                self.log_message("Load device error: {}".format(str(e)))
+                self._send_response(addr, "/jarvis/device/load/response",
+                                  [0, "error", str(e)])
+
+        if hasattr(self, 'schedule_message'):
+            self.schedule_message(1, do_load_on_main_thread)
+        else:
+            do_load_on_main_thread()
     
     def _handle_load_device_by_uri(self, args, addr):
-        """Handle device loading by browser URI"""
+        """Handle device loading by browser URI.
+
+        IMPORTANT: Must run on main thread — same reason as _handle_load_device.
+        """
         if len(args) < 2:
             self._send_response(addr, "/jarvis/device/load_by_uri/response",
                               [0, "error", "Missing arguments"])
             return
-        
+
         track_index = int(args[0])
         browser_uri = str(args[1])
         position = int(args[2]) if len(args) > 2 else -1
-        
-        try:
-            result = self._load_device_by_uri(track_index, browser_uri, position)
-            self._send_response(addr, "/jarvis/device/load_by_uri/response", result)
-        except Exception as e:
-            self.log_message("Load device by URI error: {}".format(str(e)))
-            self._send_response(addr, "/jarvis/device/load_by_uri/response",
-                              [0, "error", str(e)])
+
+        def do_load_uri_on_main_thread():
+            try:
+                result = self._load_device_by_uri(track_index, browser_uri, position)
+                self._send_response(addr, "/jarvis/device/load_by_uri/response", result)
+            except Exception as e:
+                self.log_message("Load device by URI error: {}".format(str(e)))
+                self._send_response(addr, "/jarvis/device/load_by_uri/response",
+                                  [0, "error", str(e)])
+
+        if hasattr(self, 'schedule_message'):
+            self.schedule_message(1, do_load_uri_on_main_thread)
+        else:
+            do_load_uri_on_main_thread()
     
     def _load_device_on_track(self, track_index, device_name, position=-1):
         """Load a device onto a track by name"""
@@ -319,29 +339,43 @@ class JarvisDeviceLoader(ControlSurface):
         devices_before = len(list(track.devices))
         self.log_message("Devices on track before load: {}".format(devices_before))
 
-        # Load the device
+        # Load the device — we are now on the main thread (via schedule_message)
+        # so this is safe and won't cause Audio queue timeout
         try:
             browser.load_item(device_uri)
         except Exception as e:
             error_msg = "Failed to load device: {}".format(str(e))
             self.log_message("ERROR: " + error_msg)
             return [0, "error", error_msg]
-        
-        # Verify the device was actually loaded (with retry)
-        import time
-        max_retries = 20  # increased retry count
+
+        # Verify the device was actually loaded.
+        # We're on the main thread already (via schedule_message), so we avoid
+        # blocking with time.sleep. Instead, check a few times with short waits.
+        # Ableton typically loads stock devices within 200-500ms.
+        max_retries = 5
         for attempt in range(max_retries):
-            time.sleep(0.1)  # Give Ableton time to load the device
-            devices_after = len(list(track.devices))
+            # Yield to Ableton briefly — 200ms per check, 1s total max
+            # This is acceptable on the main thread for a device load operation
+            import time
+            time.sleep(0.2)
+
+            try:
+                devices_after = len(list(track.devices))
+            except Exception:
+                continue
+
             if devices_after > devices_before:
                 # Success! Device was added
-                new_device = list(track.devices)[-1]
-                new_device_name = new_device.name if hasattr(new_device, 'name') else 'Unknown'
-                success_msg = "Loaded '{}' on track {} (verified: {} -> {} devices)".format(
-                    new_device_name, track_index + 1, devices_before, devices_after)
+                try:
+                    new_device = list(track.devices)[-1]
+                    new_device_name = new_device.name if hasattr(new_device, 'name') else 'Unknown'
+                except Exception:
+                    new_device_name = device_name
+                success_msg = "Loaded '{}' on track {} (verified: {} -> {} devices, attempt {})".format(
+                    new_device_name, track_index + 1, devices_before, devices_after, attempt + 1)
                 self.log_message(success_msg)
                 return [1, "success", "Device loaded: {}".format(new_device_name)]
-        
+
         # If we get here, device count didn't increase
         self.log_message("WARNING: Device count did not increase after load_item(). May have failed silently.")
         return [0, "error", "Device load may have failed - device count unchanged"]

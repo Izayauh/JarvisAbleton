@@ -23,3 +23,8 @@ config/macros.json
 .DS_Store
 Thumbs.db
 nul
+
+# Diagnostic and temporary files
+wsl_diag.txt
+test_output.txt
+calibration_log.txt

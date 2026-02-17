@@ -74,7 +74,11 @@
       "Bash(\".\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_desktop_openclaw.py -v)",
       "Bash(\"C:\\\\Users\\\\isaia\\\\Documents\\\\JarvisAbleton\\\\venv\\\\Scripts\\\\python.exe\" -m unittest tests.test_desktop_openclaw -v)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git push:*)",
+      "Bash(cmd //c mklink logs\\\\AbletonLog.txt \"C:\\\\Users\\\\isaia\\\\AppData\\\\Roaming\\\\Ableton\\\\Live 11.3.43\\\\Preferences\\\\Log.txt\")"
     ]
   }
 }

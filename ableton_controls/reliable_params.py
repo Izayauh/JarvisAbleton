@@ -224,7 +224,7 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
     device_lower = device_name.lower() if device_name else ""
 
     # === FREQUENCY parameters (logarithmic) ===
-    if any(kw in name_lower for kw in ['frequency', 'freq', ' hz']):
+    if any(kw in name_lower for kw in ['frequency', 'freq', ' hz', 'filter']):
         # EQ bands, filter frequencies
         if value > 1.0:  # Only convert if it looks like Hz (not already normalized)
             return (_freq_to_normalized(value), "freq_log")
@@ -341,6 +341,10 @@ class CachedDeviceInfo:
         """Check if cache entry is expired"""
         return time.time() - self.timestamp > self.ttl
     
+    @property
+    def param_count(self) -> int:
+        return len(self.param_names)
+
     def get_param_index(self, name: str) -> Optional[int]:
         """Find parameter index by name (case-insensitive)"""
         name_lower = name.lower()
@@ -668,6 +672,51 @@ class ReliableParameterController:
             "band4_gain_db": ("4 Gain A", 17), "band4_gain": ("4 Gain A", 17),
             "band4_q": ("4 Resonance A", 18),
             "band4_type": ("4 Filter Type A", 19),
+            # Band 5 parameters (indices 21-25)
+            "band5_on": ("5 Filter On A", 25), "band5_active": ("5 Filter On A", 25),
+            "band5_freq_hz": ("5 Frequency A", 21), "band5_frequency": ("5 Frequency A", 21),
+            "band5_gain_db": ("5 Gain A", 22), "band5_gain": ("5 Gain A", 22),
+            "band5_q": ("5 Resonance A", 23),
+            "band5_type": ("5 Filter Type A", 24),
+            # Band 8 parameters (indices 36-40)
+            "band8_on": ("8 Filter On A", 40), "band8_active": ("8 Filter On A", 40),
+            "band8_freq_hz": ("8 Frequency A", 36), "band8_frequency": ("8 Frequency A", 36),
+            "band8_gain_db": ("8 Gain A", 37), "band8_gain": ("8 Gain A", 37),
+            "band8_q": ("8 Resonance A", 38),
+            "band8_type": ("8 Filter Type A", 39),
+            
+            # Additional semantic mappings for JSON keys (underscore format)
+            "band_1_filter_type": ("1 Filter Type A", 4),
+            "band_1_frequency": ("1 Frequency A", 1),
+            "band_1_gain": ("1 Gain A", 2),
+            "band_1_q": ("1 Resonance A", 3),
+            
+            "band_2_filter_type": ("2 Filter Type A", 9),
+            "band_2_frequency": ("2 Frequency A", 6),
+            "band_2_gain": ("2 Gain A", 7),
+            "band_2_q": ("2 Resonance A", 8),
+            
+            "band_5_filter_type": ("5 Filter Type A", 24),
+            "band_5_frequency": ("5 Frequency A", 21),
+            "band_5_gain": ("5 Gain A", 22),
+            "band_5_q": ("5 Resonance A", 23),
+            
+            "band_8_filter_type": ("8 Filter Type A", 39),
+            "band_8_frequency": ("8 Frequency A", 36),
+            "band_8_gain": ("8 Gain A", 37),
+            "band_8_q": ("8 Resonance A", 38),
+            
+            "output_gain": ("Output Gain", 0),  # Usually index 0 or similar, checking needed. often global gain is last but check
+        },
+        "Multiband Dynamics": {
+            # High Band
+            "high_threshold": ("H Threshold", 20), 
+            "high_ratio": ("H Ratio", 21),
+            "high_attack": ("H Attack", 22),
+            "high_release": ("H Release", 23),
+            "high_gain": ("H Output Gain", 24), # Verify name
+            "dry_wet": ("Dry/Wet", 0),
+            "output_gain": ("Output Gain", 0), # Verify if global output exists separately or part of device
         },
         "Compressor": {
             "threshold_db": ("Threshold", 1), "threshold": ("Threshold", 1),
@@ -706,6 +755,15 @@ class ReliableParameterController:
             "dry_wet_pct": ("Dry/Wet", 14), "dry_wet": ("Dry/Wet", 14), "mix": ("Dry/Wet", 14),
             "filter_on": ("Filter", 6),
             "filter_freq_hz": ("Filter Freq", 7), "filter_freq": ("Filter Freq", 7),
+            
+            # Semantic mappings for Travis Scott JSON
+            "sync": ("L Sync", 0), # Or "Delay Mode"
+            "time_left": ("L Time", 2),
+            "time_right": ("R Time", 4),
+            "filter_low": ("Filter Freq", 7), # Delay filter is bandpass? Or High/Low?
+            "filter_high": ("Filter Width", 8), # Assuming bandpass width/freq or similar. Check KB.
+            "ping_pong": ("Ping Pong", 1),
+            "output_gain": ("Output Gain", 0),
         },
         "Utility": {
             "gain_db": ("Gain", 3), "gain": ("Gain", 3),
@@ -985,7 +1043,8 @@ class ReliableParameterController:
             # Check if this is NOT a percentage (frequency, time, ratio, etc.)
             non_percentage_keywords = ['frequency', 'freq', 'hz', 'time', 'delay', 
                                         'attack', 'release', 'decay', 'ratio', 
-                                        'threshold', 'gain', 'drive', 'output']
+                                        'threshold', 'gain', 'drive', 'output',
+                                        'filter', 'base']
             
             is_percentage = any(kw in param_name for kw in percentage_keywords)
             is_not_percentage = any(kw in param_name for kw in non_percentage_keywords)
@@ -1003,16 +1062,49 @@ class ReliableParameterController:
                     result["clamped"] = True
                     self._log(f"  Auto-converted percentage: {value}% -> {target_value}", "INFO")
         
-        # Clamp value to the parameter's valid range
-        clamped_value = target_value
-        if target_value < pmin:
-            clamped_value = pmin
-            result["clamped"] = True
-            self._log(f"  Clamped {target_value} to min {pmin}", "INFO")
-        elif target_value > pmax:
-            clamped_value = pmax
-            result["clamped"] = True
-            self._log(f"  Clamped {target_value} to max {pmax}", "INFO")
+        # NORMALIZATION-FIRST STRATEGY:
+        # For parameters where smart_normalize knows the mapping (freq, time, ratio,
+        # etc.), we must normalize BEFORE clamping. Otherwise, a human value like
+        # "300 Hz" gets clamped to 1.0 (the max of a [0,1] normalized range) before
+        # the log formula can convert it to ~0.44.
+        #
+        # We probe smart_normalize once to see if it would apply a known conversion.
+        # If so, we use its output directly (already in 0-1 space).
+        # If not (passthrough/linear_fallback), we clamp in human space first.
+        
+        probe_normalized, probe_method = smart_normalize_parameter(
+            param_name, target_value, device_name, pmin, pmax
+        )
+        
+        # Methods that indicate smart_normalize understood the parameter semantics
+        _SMART_METHODS = {
+            "freq_log", "threshold_lut", "ratio_lut", "attack_log",
+            "release_log", "q_log", "decay_log", "predelay_linear",
+            "delay_log", "drive_linear", "percent", "gain_db",
+            "eq_gain_raw", "eq_gain_db_fallback", "enum_raw",
+        }
+        
+        if probe_method in _SMART_METHODS:
+            # smart_normalize handled it — value is already normalized.
+            # Clamp the NORMALIZED result to [0, 1] (safe for all params).
+            clamped_value = target_value  # Preserve human value for logging
+            pre_normalized = True
+            self._log(
+                f"  Smart conversion ({probe_method}): {target_value} -> "
+                f"{probe_normalized:.6f} (pre-normalized)", "INFO"
+            )
+        else:
+            # Fallback: clamp in human space, normalize later
+            pre_normalized = False
+            clamped_value = target_value
+            if target_value < pmin:
+                clamped_value = pmin
+                result["clamped"] = True
+                self._log(f"  Clamped {target_value} to min {pmin}", "INFO")
+            elif target_value > pmax:
+                clamped_value = pmax
+                result["clamped"] = True
+                self._log(f"  Clamped {target_value} to max {pmax}", "INFO")
         
         # Calculate appropriate tolerance based on parameter range
         param_range = abs(pmax - pmin)
@@ -1037,9 +1129,12 @@ class ReliableParameterController:
                      f"(OSC readback unreliable for these parameters)", "INFO")
             
             # Normalize and send the value (using smart normalization)
-            normalized_value, conversion_method = smart_normalize_parameter(
-                param_name, clamped_value, device_name, pmin, pmax
-            )
+            if pre_normalized:
+                normalized_value, conversion_method = probe_normalized, probe_method
+            else:
+                normalized_value, conversion_method = smart_normalize_parameter(
+                    param_name, clamped_value, device_name, pmin, pmax
+                )
             result["normalized_sent"] = normalized_value
             result["conversion_method"] = conversion_method
             result["attempts"] = 1
@@ -1073,9 +1168,12 @@ class ReliableParameterController:
             
             try:
                 # === NORMALIZE the value using smart parameter-specific conversion ===
-                normalized_value, conversion_method = smart_normalize_parameter(
-                    param_name, clamped_value, device_name, pmin, pmax
-                )
+                if pre_normalized:
+                    normalized_value, conversion_method = probe_normalized, probe_method
+                else:
+                    normalized_value, conversion_method = smart_normalize_parameter(
+                        param_name, clamped_value, device_name, pmin, pmax
+                    )
                 result["normalized_sent"] = normalized_value
                 result["conversion_method"] = conversion_method
 
@@ -1598,6 +1696,188 @@ class ReliableParameterController:
 
         result["message"] = f"Expected device '{expected_device}' not found after {max_retries + 1} attempts"
         self._log(result["message"], "WARN")
+        return result
+
+    # ==================== READ-WRITE FEEDBACK LOOP ====================
+
+    def set_parameter_with_readback(
+        self,
+        track_index: int,
+        device_index: int,
+        param_index: int,
+        target_display_value: float,
+        max_iterations: int = 5,
+        tolerance_pct: float = 5.0,
+        auto_calibrate: bool = True,
+    ) -> Dict[str, Any]:
+        """
+        Set a parameter using a closed Read-Write feedback loop.
+
+        Instead of blindly sending a normalized float, this method:
+        1. Estimates an initial normalized value (from calibration DB or smart_normalize).
+        2. Sends it to Ableton.
+        3. Reads back the display string (e.g., "1.2 kHz").
+        4. Compares the readback to the target.
+        5. If wrong, adjusts via binary search and retries.
+
+        Args:
+            track_index: Track index (0-based)
+            device_index: Device index (0-based)
+            param_index: Parameter index (0-based)
+            target_display_value: Target value in human units (e.g., 500 for 500 Hz)
+            max_iterations: Maximum correction iterations
+            tolerance_pct: Acceptable error as % of target value (default 5%)
+            auto_calibrate: If True, trigger a calibration sweep on first encounter
+
+        Returns:
+            Dict with success, iterations, target, actual_display, final_normalized, etc.
+        """
+        from calibration_utils import (
+            CalibrationStore,
+            CalibrationSweeper,
+            parse_display_value,
+            value_to_normalized_from_curve,
+        )
+
+        result = {
+            "success": False,
+            "target_value": target_display_value,
+            "actual_display": None,
+            "actual_base_value": None,
+            "final_normalized": None,
+            "iterations": 0,
+            "method": None,
+            "message": "",
+        }
+
+        # --- Step 0: Get device + param info ---
+        info = self.get_device_info(track_index, device_index)
+        if not info or not info.accessible:
+            result["message"] = "Device not accessible"
+            self._log(f"set_parameter_with_readback: device not accessible", "ERROR")
+            return result
+
+        device_name = info.device_name
+        param_name = info.param_names[param_index] if param_index < len(info.param_names) else f"param_{param_index}"
+        pmin, pmax = self.get_parameter_range(track_index, device_index, param_index)
+
+        self._log(
+            f"set_parameter_with_readback: device={device_name}, param={param_name} "
+            f"(idx={param_index}), target={target_display_value}, range=[{pmin}, {pmax}]"
+        )
+
+        # --- Step 1: Get initial guess from CalibrationStore ---
+        store = CalibrationStore()
+        curve = store.get_curve(device_name, param_name, param_index=param_index)
+
+        guess = None
+        if curve:
+            guess = value_to_normalized_from_curve(float(target_display_value), curve)
+            if guess is not None:
+                result["method"] = "calibration_curve"
+                self._log(f"  Initial guess from calibration: {guess:.6f}", "INFO")
+
+        # --- Step 2: Fall back to smart_normalize ---
+        if guess is None:
+            guess_val, method = smart_normalize_parameter(
+                param_name, float(target_display_value), device_name, pmin, pmax
+            )
+            guess = guess_val
+            result["method"] = f"smart_normalize ({method})"
+            self._log(f"  Initial guess from smart_normalize: {guess:.6f} ({method})", "INFO")
+
+        # --- Step 3: Auto-calibrate if no curve exists ---
+        if curve is None and auto_calibrate:
+            self._log(f"  No calibration curve found. Running auto-calibration sweep...", "INFO")
+            try:
+                sweeper = CalibrationSweeper(self.ableton)
+                sweep_result = sweeper.sweep_and_save(
+                    track_index, device_index, param_indices=[param_index]
+                )
+                # Reload curve
+                curve = store.get_curve(device_name, param_name, param_index=param_index)
+                if curve:
+                    new_guess = value_to_normalized_from_curve(float(target_display_value), curve)
+                    if new_guess is not None:
+                        guess = new_guess
+                        result["method"] = "auto_calibrated_curve"
+                        self._log(f"  Updated guess from auto-calibration: {guess:.6f}", "INFO")
+            except Exception as e:
+                self._log(f"  Auto-calibration failed: {e}", "WARN")
+
+        # --- Step 4: Send + Read + Correct loop ---
+        low = 0.0
+        high = 1.0
+        current_guess = max(0.0, min(1.0, guess))
+
+        for iteration in range(1, max_iterations + 1):
+            result["iterations"] = iteration
+
+            # Send
+            self.ableton.set_device_parameter(
+                track_index, device_index, param_index, current_guess
+            )
+            time.sleep(self.default_verify_delay)
+
+            # Read back display string
+            readback = self.ableton.get_device_parameter_value_string_sync(
+                track_index, device_index, param_index
+            )
+            display_str = readback.get("value_string", "") if readback.get("success") else ""
+            result["actual_display"] = display_str
+
+            parsed = parse_display_value(display_str)
+            actual_base = parsed.get("base_value")
+            result["actual_base_value"] = actual_base
+            result["final_normalized"] = current_guess
+
+            self._log(
+                f"  Iteration {iteration}: sent={current_guess:.6f}, "
+                f"readback=\"{display_str}\", parsed={actual_base}"
+            )
+
+            if actual_base is None:
+                self._log(f"  Could not parse readback - accepting current guess", "WARN")
+                result["success"] = True
+                result["message"] = f"Set to {current_guess:.6f}, readback unparseable: \"{display_str}\""
+                return result
+
+            # Compare
+            target_f = float(target_display_value)
+            diff = abs(actual_base - target_f)
+            threshold = abs(target_f) * (tolerance_pct / 100.0) if target_f != 0 else 1.0
+
+            if diff <= threshold:
+                result["success"] = True
+                result["message"] = (
+                    f"Converged in {iteration} iteration(s): "
+                    f"target={target_f}, actual={actual_base} "
+                    f"(diff={diff:.2f}, threshold={threshold:.2f})"
+                )
+                self._log(f"  SUCCESS: {result['message']}", "SUCCESS")
+                return result
+
+            # Adjust via binary search
+            if actual_base < target_f:
+                # Need to go higher
+                low = current_guess
+            else:
+                # Need to go lower
+                high = current_guess
+            current_guess = (low + high) / 2.0
+
+            self._log(
+                f"  Adjusting: actual={actual_base}, target={target_f}, "
+                f"new_guess={current_guess:.6f} (range [{low:.6f}, {high:.6f}])"
+            )
+
+        # Exhausted iterations
+        result["message"] = (
+            f"Did not converge after {max_iterations} iterations. "
+            f"Last readback: \"{result['actual_display']}\" "
+            f"(parsed={result['actual_base_value']})"
+        )
+        self._log(f"  FAILED: {result['message']}", "ERROR")
         return result
 
     # ==================== UTILITIES ====================
