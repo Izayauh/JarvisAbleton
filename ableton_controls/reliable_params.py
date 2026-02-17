@@ -295,11 +295,7 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
         if value > 1:  # Looks like percentage
             return (_percent_to_normalized(value), "percent")
 
-    # === COMPRESSOR MAKEUP (0-20 dB mapped to [0,1]) ===
-    if 'makeup' in name_lower and 'compressor' in device_lower:
-        if 0 <= value <= 20:  # Looks like dB
-            return (value / 20.0, "makeup_linear")
-    
+
     # === GAIN parameters (dB) ===
     if any(kw in name_lower for kw in ['gain', 'output']):
         # EQ Eight gain handling can vary by exposed OSC range depending on device state.
@@ -1140,7 +1136,7 @@ class ReliableParameterController:
             "release_log", "q_log", "decay_log", "predelay_linear",
             "delay_log", "drive_linear", "percent", "gain_db",
             "eq_gain_raw", "eq_gain_db_fallback", "enum_raw",
-            "makeup_linear", "utility_width_percent", "base_linear",
+            "utility_width_percent", "base_linear",
         }
         
         if probe_method in _SMART_METHODS:

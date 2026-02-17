@@ -533,7 +533,10 @@ def main():
         
         if not args:
             # If we couldn't parse flags either, show the original error
-            print(json.dumps({"success": False, "error": f"Invalid JSON args: Expecting value: line 1 column 1 (char 0)"}))
+            print(json.dumps({
+                "success": False, 
+                "error": f"Invalid JSON args. Received: {repr(raw_args)}. Use flag style instead: --track_index 0 --device_index 2"
+            }))
             sys.exit(1)
 
     if not isinstance(args, dict):
