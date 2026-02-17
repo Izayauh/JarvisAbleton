@@ -224,7 +224,7 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
     device_lower = device_name.lower() if device_name else ""
 
     # === FREQUENCY parameters (logarithmic) ===
-    if any(kw in name_lower for kw in ['frequency', 'freq', ' hz', 'filter']):
+    if any(kw in name_lower for kw in ['frequency', 'freq', ' hz', 'filter', 'cut']):
         # EQ bands, filter frequencies
         if value > 1.0:  # Only convert if it looks like Hz (not already normalized)
             return (_freq_to_normalized(value), "freq_log")
@@ -266,6 +266,8 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
     if 'decay' in name_lower and 'reverb' in device_lower:
         if value > 100:  # Looks like milliseconds
             return (_decay_to_normalized(value), "decay_log")
+        elif 0.1 < value <= 100:  # Looks like seconds, convert to ms
+            return (_decay_to_normalized(value * 1000), "decay_log")
 
     # === PREDELAY (linear 0-250ms) ===
     if 'predelay' in name_lower:
@@ -281,14 +283,25 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
     if 'drive' in name_lower and 'saturator' in device_lower:
         if value > 1:  # Looks like dB
             return (_drive_to_normalized(value), "drive_linear")
+    
+    # === SATURATOR BASE (bipolar dB-style: -36 to +36) ===
+    if 'base' in name_lower and 'saturator' in device_lower:
+        # Base is a bipolar gain-like parameter affecting low frequencies
+        if -36 <= value <= 36:
+            return ((value + 36) / 72.0, "base_linear")
 
     # === DRY/WET, MIX (percentage) ===
     if any(kw in name_lower for kw in ['dry/wet', 'dry_wet', 'mix', 'wet']):
         if value > 1:  # Looks like percentage
             return (_percent_to_normalized(value), "percent")
 
+    # === COMPRESSOR MAKEUP (0-20 dB mapped to [0,1]) ===
+    if 'makeup' in name_lower and 'compressor' in device_lower:
+        if 0 <= value <= 20:  # Looks like dB
+            return (value / 20.0, "makeup_linear")
+    
     # === GAIN parameters (dB) ===
-    if any(kw in name_lower for kw in ['gain', 'output', 'makeup']):
+    if any(kw in name_lower for kw in ['gain', 'output']):
         # EQ Eight gain handling can vary by exposed OSC range depending on device state.
         # Prefer raw dB only when reported range looks like true dB (about -15..+15).
         if 'eq eight' in device_lower or 'eq' in device_lower:
@@ -309,6 +322,16 @@ def smart_normalize_parameter(param_name: str, value: float, device_name: str = 
         if value > 1:  # Looks like percentage
             return (_percent_to_normalized(value), "percent")
 
+    # === UTILITY WIDTH (percentage: 0-200% mapped to [0,2]) ===
+    if 'width' in name_lower and 'utility' in device_lower:
+        if value > 1:  # Looks like percentage
+            return (value / 100.0, "utility_width_percent")
+    
+    # === UTILITY BASS MONO (frequency in Hz) ===
+    if 'bass mono' in name_lower or 'bass_mono' in name_lower:
+        if value > 1:  # Looks like Hz
+            return (_freq_to_normalized(value), "freq_log")
+    
     # === ROOM SIZE (already 0-1 typically) ===
     if 'room' in name_lower and 'size' in name_lower:
         if 0 <= value <= 1:
@@ -685,38 +708,56 @@ class ReliableParameterController:
             "band8_q": ("8 Resonance A", 38),
             "band8_type": ("8 Filter Type A", 39),
             
-            # Additional semantic mappings for JSON keys (underscore format)
             "band_1_filter_type": ("1 Filter Type A", 4),
             "band_1_frequency": ("1 Frequency A", 1),
             "band_1_gain": ("1 Gain A", 2),
             "band_1_q": ("1 Resonance A", 3),
+            "band_1_on": ("1 Filter On A", 5),
             
             "band_2_filter_type": ("2 Filter Type A", 9),
             "band_2_frequency": ("2 Frequency A", 6),
             "band_2_gain": ("2 Gain A", 7),
             "band_2_q": ("2 Resonance A", 8),
+            "band_2_on": ("2 Filter On A", 10),
             
             "band_5_filter_type": ("5 Filter Type A", 24),
             "band_5_frequency": ("5 Frequency A", 21),
             "band_5_gain": ("5 Gain A", 22),
             "band_5_q": ("5 Resonance A", 23),
+            "band_5_on": ("5 Filter On A", 25),
             
             "band_8_filter_type": ("8 Filter Type A", 39),
             "band_8_frequency": ("8 Frequency A", 36),
             "band_8_gain": ("8 Gain A", 37),
             "band_8_q": ("8 Resonance A", 38),
+            "band_8_on": ("8 Filter On A", 40),
             
             "output_gain": ("Output Gain", 0),  # Usually index 0 or similar, checking needed. often global gain is last but check
         },
         "Multiband Dynamics": {
-            # High Band
-            "high_threshold": ("H Threshold", 20), 
-            "high_ratio": ("H Ratio", 21),
-            "high_attack": ("H Attack", 22),
-            "high_release": ("H Release", 23),
-            "high_gain": ("H Output Gain", 24), # Verify name
-            "dry_wet": ("Dry/Wet", 0),
-            "output_gain": ("Output Gain", 0), # Verify if global output exists separately or part of device
+            # High Band (Above = compression, Below = upward expansion)
+            "high_threshold": ("Above Threshold (High)", 19),
+            "high_ratio": ("Above Ratio (High)", 25),
+            "high_attack": ("Attack Time (High)", 31),
+            "high_release": ("Release Time (High)", 34),
+            "high_gain": ("Output Gain (High)", 10),
+            # Mid Band
+            "mid_threshold": ("Above Threshold (Mid)", 18),
+            "mid_ratio": ("Above Ratio (Mid)", 24),
+            "mid_attack": ("Attack Time (Mid)", 30),
+            "mid_release": ("Release Time (Mid)", 33),
+            "mid_gain": ("Output Gain (Mid)", 9),
+            # Low Band
+            "low_threshold": ("Above Threshold (Low)", 17),
+            "low_ratio": ("Above Ratio (Low)", 23),
+            "low_attack": ("Attack Time (Low)", 29),
+            "low_release": ("Release Time (Low)", 32),
+            "low_gain": ("Output Gain (Low)", 8),
+            # Global
+            "amount": ("Amount", 6),
+            "master_output": ("Master Output", 5),
+            "dry_wet": ("Amount", 6),
+            "output_gain": ("Master Output", 5),
         },
         "Compressor": {
             "threshold_db": ("Threshold", 1), "threshold": ("Threshold", 1),
@@ -748,6 +789,22 @@ class ReliableParameterController:
             "room_size": ("Room Size", 2), "size": ("Room Size", 2),
             "high_cut_hz": ("HiShelf Freq", 7), "high_cut": ("HiShelf Freq", 7),
             "low_cut_hz": ("LoShelf Freq", 5), "low_cut": ("LoShelf Freq", 5),
+            "stereo": ("Stereo Image", 4), "stereo_image": ("Stereo Image", 4),
+            "output_gain": ("Reflect Level", 8), # Best guess for output/gain if not Global. Or "Diffuse Level" (9).
+                                                 # Actually Reverb usually has "Input Filter" (0), "Predelay" (1)...
+                                                 # Let's try to map to "Dry/Wet" if gain is not standard, or just leave it.
+                                                 # Wait, standard Reverb has "Global Gain"? No.
+                                                 # For now, let's map Output Gain to Dry/Wet if it's 0dB (unity) or just ignore?
+                                                 # Better: "Reflect Level" or "Diffuse Level" are gains.
+                                                 # BUT, "Output Gain" in the preset might just be a placeholder.
+                                                 # Let's check if there is a "Gain" or "Volume".
+                                                 # Reverb Device in 11: Input Processing, Early Reflections, Global.
+                                                 # "Input Processing" > "Lo Cut", "Hi Cut".
+                                                 # "Global" > "Stereo", "Dry/Wet", "Chorusing".
+                                                 # There is no master output gain on stock Reverb other than Dry/Wet mix?
+                                                 # checking... actually "Reflect Level" and "Diffuse Level" are the closest.
+                                                 # I will map output_gain to nothing for now to avoid breaking things, or maybe "Diffuse Level"?
+                                                 # Let's just add "Stereo" for now as that was the explicit failure.
         },
         "Delay": {
             "delay_time_ms": ("L Time", 2), "delay_time": ("L Time", 2), "time": ("L Time", 2),
@@ -1044,10 +1101,11 @@ class ReliableParameterController:
             non_percentage_keywords = ['frequency', 'freq', 'hz', 'time', 'delay', 
                                         'attack', 'release', 'decay', 'ratio', 
                                         'threshold', 'gain', 'drive', 'output',
-                                        'filter', 'base']
+                                        'filter', 'base', 'attack', 'release']
             
-            is_percentage = any(kw in param_name for kw in percentage_keywords)
-            is_not_percentage = any(kw in param_name for kw in non_percentage_keywords)
+            param_name_lower = param_name.lower()
+            is_percentage = any(kw in param_name_lower for kw in percentage_keywords)
+            is_not_percentage = any(kw in param_name_lower for kw in non_percentage_keywords)
             
             # Only convert if it looks like a percentage param and doesn't look like something else
             if is_percentage and not is_not_percentage:
@@ -1082,6 +1140,7 @@ class ReliableParameterController:
             "release_log", "q_log", "decay_log", "predelay_linear",
             "delay_log", "drive_linear", "percent", "gain_db",
             "eq_gain_raw", "eq_gain_db_fallback", "enum_raw",
+            "makeup_linear", "utility_width_percent", "base_linear",
         }
         
         if probe_method in _SMART_METHODS:

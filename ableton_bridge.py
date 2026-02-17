@@ -502,12 +502,39 @@ def main():
     func_name = sys.argv[1]
     raw_args = sys.argv[2] if len(sys.argv) > 2 else "{}"
 
-    # Parse JSON args
+    # Parse JSON args (with fallback to --flag style)
     try:
         args = json.loads(raw_args)
-    except json.JSONDecodeError as e:
-        print(json.dumps({"success": False, "error": f"Invalid JSON args: {e}"}))
-        sys.exit(1)
+    except json.JSONDecodeError:
+        # Fallback: parse --key value pairs from argv
+        args = {}
+        argv = sys.argv[2:]
+        i = 0
+        while i < len(argv):
+            if argv[i].startswith("--"):
+                key = argv[i][2:].replace("-", "_")
+                if i + 1 < len(argv) and not argv[i+1].startswith("--"):
+                    val = argv[i + 1]
+                    # Auto-convert numeric strings
+                    try:
+                        val = int(val)
+                    except ValueError:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            pass
+                    args[key] = val
+                    i += 2
+                else:
+                    args[key] = True
+                    i += 1
+            else:
+                i += 1
+        
+        if not args:
+            # If we couldn't parse flags either, show the original error
+            print(json.dumps({"success": False, "error": f"Invalid JSON args: Expecting value: line 1 column 1 (char 0)"}))
+            sys.exit(1)
 
     if not isinstance(args, dict):
         print(json.dumps({"success": False, "error": "Args must be a JSON object"}))

@@ -10,10 +10,12 @@
       "category": "eq",
       "purpose": "Remove low-end rumble and reduce muddy low-mids before compression.",
       "parameters": {
+        "Band 1 On": 1,
         "Band 1 Filter Type": 0,
         "Band 1 Frequency": 95,
         "Band 1 Gain": 0,
         "Band 1 Q": 0.71,
+        "Band 2 On": 1,
         "Band 2 Filter Type": 3,
         "Band 2 Frequency": 300,
         "Band 2 Gain": -3.2,
@@ -68,7 +70,7 @@
       "purpose": "Add harmonic richness and slight edge for modern trap vocal density.",
       "parameters": {
         "Drive": 4,
-        "Base": 210,
+        "Base": 10,
         "Frequency": 7000,
         "Depth": 0,
         "Output": -2,
@@ -84,10 +86,12 @@
       "category": "eq",
       "purpose": "Add presence and air after dynamics/saturation processing.",
       "parameters": {
+        "Band 5 On": 1,
         "Band 5 Filter Type": 2,
         "Band 5 Frequency": 4800,
         "Band 5 Gain": 2.4,
         "Band 5 Q": 0.9,
+        "Band 8 On": 1,
         "Band 8 Filter Type": 1,
         "Band 8 Frequency": 12500,
         "Band 8 Gain": 3.8,
@@ -159,7 +163,8 @@
       "parameters": {
         "Gain": 0,
         "Width": 100,
-        "Bass Mono": 120,
+        "Bass Mono": 1,
+        "Bass Freq": 120,
         "Mute": 0
       },
       "fallbacks": [

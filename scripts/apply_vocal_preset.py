@@ -152,6 +152,19 @@ def load_and_configure_device(track_index: int, plugin_name: str,
         msg = param_result.get("message", "unknown")
         print(f"    Parameter setting failed: {msg}")
         result["errors"].append(f"Params failed: {msg}")
+        
+        # Even on failure, we might have details for partial successes or specific failures
+        if "details" in param_result and param_result["details"]:
+            for detail in param_result["details"]:
+                status = "OK" if detail.get("success") else "FAIL"
+                name = detail.get("param_name", "?")
+                req = detail.get("requested_value", "?")
+                actual = detail.get("actual_value", "?")
+                verified = detail.get("verified", False)
+                vstr = "verified" if verified else "unverified"
+                print(f"      [{status}] {name}: {req} -> {actual} ({vstr})")
+                result["param_details"].append(detail)
+        
         result["params_failed"] = len(parameters)
 
     return result
